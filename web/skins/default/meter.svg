@@ -1,90 +1,523 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="250" viewBox="0 0 560 250">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="560"
+   height="250"
+   viewBox="0 0 560 250"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="meter.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.2425386"
+     inkscape:cx="271.79019"
+     inkscape:cy="129.98661"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
   <!-- LCD glass background -->
-  <rect id="glass" x="6" y="6" width="548" height="240" rx="10" class="glass"/>
-
+  <rect
+     id="glass"
+     x="6"
+     y="6"
+     width="548"
+     height="240"
+     rx="10"
+     class="glass"
+     style="display:inline" />
   <!-- Function + RTC labels -->
-  <text id="fn_text" x="340" y="95" class="lbl" font-size="14">DCV</text>
-  <text id="rtc_text" x="340" y="246" class="lbl" font-size="9"></text>
-
+  <text
+     id="fn_text"
+     x="340"
+     y="83"
+     class="lbl"
+     font-size="14px">DCV</text>
+  <text
+     id="rtc_text"
+     x="429.06488"
+     y="237.97339"
+     class="lbl"
+     font-size="9px"
+     style="display:inline">8888-88-88 88:88:88.888</text>
   <!-- Negative sign -->
-  <rect id="sign_neg" x="8" y="108" width="14" height="6" rx="3" class="seg"/>
-
+  <rect
+     id="sign_neg"
+     x="16"
+     y="96"
+     width="14"
+     height="6"
+     rx="3"
+     class="seg" />
   <!-- Digit 0 -->
-  <rect id="digit0_a" x="30" y="81" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit0_f" x="27" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit0_b" x="61" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit0_g" x="30" y="109" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit0_e" x="27" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit0_c" x="61" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit0_d" x="30" y="141" width="30" height="6" rx="3" class="seg"/>
-  <circle id="digit0_dp" cx="67" cy="141" r="4" class="seg"/>
-
+  <rect
+     id="digit0_a"
+     x="40"
+     y="69"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_f"
+     x="33"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_b"
+     x="71"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_g"
+     x="40"
+     y="97"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_e"
+     x="33"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_c"
+     x="71"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit0_d"
+     x="40"
+     y="129"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <circle
+     id="digit0_dp"
+     cx="82"
+     cy="131"
+     r="4"
+     class="seg" />
   <!-- Digit 1 -->
-  <rect id="digit1_a" x="90" y="81" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit1_f" x="87" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit1_b" x="121" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit1_g" x="90" y="109" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit1_e" x="87" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit1_c" x="121" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit1_d" x="90" y="141" width="30" height="6" rx="3" class="seg"/>
-  <circle id="digit1_dp" cx="127" cy="141" r="4" class="seg"/>
-
+  <rect
+     id="digit1_a"
+     x="100"
+     y="69"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_f"
+     x="93"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_b"
+     x="131"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_g"
+     x="100"
+     y="97"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_e"
+     x="93"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_c"
+     x="131"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit1_d"
+     x="100"
+     y="129"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <circle
+     id="digit1_dp"
+     cx="142"
+     cy="131"
+     r="4"
+     class="seg" />
   <!-- Digit 2 -->
-  <rect id="digit2_a" x="150" y="81" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit2_f" x="147" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit2_b" x="181" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit2_g" x="150" y="109" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit2_e" x="147" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit2_c" x="181" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit2_d" x="150" y="141" width="30" height="6" rx="3" class="seg"/>
-  <circle id="digit2_dp" cx="187" cy="141" r="4" class="seg"/>
-
+  <rect
+     id="digit2_a"
+     x="160"
+     y="69"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_f"
+     x="153"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_b"
+     x="191"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_g"
+     x="160"
+     y="97"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_e"
+     x="153"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_c"
+     x="191"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit2_d"
+     x="160"
+     y="129"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <circle
+     id="digit2_dp"
+     cx="202"
+     cy="131"
+     r="4"
+     class="seg" />
   <!-- Digit 3 -->
-  <rect id="digit3_a" x="210" y="81" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit3_f" x="207" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit3_b" x="241" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit3_g" x="210" y="109" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit3_e" x="207" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit3_c" x="241" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit3_d" x="210" y="141" width="30" height="6" rx="3" class="seg"/>
-  <circle id="digit3_dp" cx="247" cy="141" r="4" class="seg"/>
-
+  <rect
+     id="digit3_a"
+     x="220"
+     y="69"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_f"
+     x="213"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_b"
+     x="251"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_g"
+     x="220"
+     y="97"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_e"
+     x="213"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_c"
+     x="251"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit3_d"
+     x="220"
+     y="129"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <circle
+     id="digit3_dp"
+     cx="262"
+     cy="131"
+     r="4"
+     class="seg" />
   <!-- Digit 4 -->
-  <rect id="digit4_a" x="270" y="81" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit4_f" x="267" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit4_b" x="301" y="85" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit4_g" x="270" y="109" width="30" height="6" rx="3" class="seg"/>
-  <rect id="digit4_e" x="267" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit4_c" x="301" y="115" width="6" height="28" rx="3" class="seg"/>
-  <rect id="digit4_d" x="270" y="141" width="30" height="6" rx="3" class="seg"/>
-  <circle id="digit4_dp" cx="307" cy="141" r="4" class="seg"/>
-
+  <rect
+     id="digit4_a"
+     x="280"
+     y="69"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_f"
+     x="273"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_b"
+     x="311"
+     y="73"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_g"
+     x="280"
+     y="97"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_e"
+     x="273"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_c"
+     x="311"
+     y="103"
+     width="6"
+     height="28"
+     rx="3"
+     class="seg" />
+  <rect
+     id="digit4_d"
+     x="280"
+     y="129"
+     width="30"
+     height="6"
+     rx="3"
+     class="seg" />
+  <circle
+     id="digit4_dp"
+     cx="321.99994"
+     cy="131"
+     r="4"
+     class="seg" />
   <!-- Prefixes (left of unit column) -->
-  <text id="prefix_n" x="340" y="118" class="unitlbl" font-size="18">n</text>
-  <text id="prefix_mu" x="340" y="144" class="unitlbl" font-size="18">µ</text>
-  <text id="prefix_m" x="340" y="170" class="unitlbl" font-size="18">m</text>
-  <text id="prefix_k" x="340" y="196" class="unitlbl" font-size="18">k</text>
-  <text id="prefix_M" x="340" y="222" class="unitlbl" font-size="18">M</text>
-  <text id="prefix_G" x="340" y="248" class="unitlbl" font-size="18">G</text>
-
+  <text
+     id="prefix_n"
+     x="340"
+     y="106"
+     class="unitlbl"
+     font-size="18px">n</text>
+  <text
+     id="prefix_mu"
+     x="340"
+     y="132"
+     class="unitlbl"
+     font-size="18px">µ</text>
+  <text
+     id="prefix_m"
+     x="340"
+     y="158"
+     class="unitlbl"
+     font-size="18px">m</text>
+  <text
+     id="prefix_k"
+     x="340"
+     y="184"
+     class="unitlbl"
+     font-size="18px">k</text>
+  <text
+     id="prefix_M"
+     x="340"
+     y="210"
+     class="unitlbl"
+     font-size="18px">M</text>
+  <text
+     id="prefix_G"
+     x="340"
+     y="236"
+     class="unitlbl"
+     font-size="18px">G</text>
   <!-- Units -->
-  <text id="unit_v" x="440" y="122" class="unitlbl" font-size="22">V</text>
-  <text id="unit_degc" x="500" y="122" class="unitlbl" font-size="18">°C</text>
-  <text id="unit_a" x="440" y="150" class="unitlbl" font-size="22">A</text>
-  <text id="unit_degf" x="500" y="150" class="unitlbl" font-size="18">°F</text>
-  <text id="unit_ohm" x="440" y="178" class="unitlbl" font-size="22">Ω</text>
-  <text id="unit_hz" x="440" y="206" class="unitlbl" font-size="18">Hz</text>
-  <text id="unit_pct" x="440" y="234" class="unitlbl" font-size="22">%</text>
-
+  <text
+     id="unit_v"
+     x="428"
+     y="110"
+     class="unitlbl"
+     font-size="22px">V</text>
+  <text
+     id="unit_degc"
+     x="500"
+     y="110"
+     class="unitlbl"
+     font-size="18px">°C</text>
+  <text
+     id="unit_a"
+     x="428"
+     y="138"
+     class="unitlbl"
+     font-size="22px">A</text>
+  <text
+     id="unit_degf"
+     x="500"
+     y="138"
+     class="unitlbl"
+     font-size="18px">°F</text>
+  <text
+     id="unit_ohm"
+     x="428"
+     y="166"
+     class="unitlbl"
+     font-size="22px">Ω</text>
+  <text
+     id="unit_hz"
+     x="428"
+     y="194"
+     class="unitlbl"
+     font-size="18px">Hz</text>
+  <text
+     id="unit_pct"
+     x="428"
+     y="222"
+     class="unitlbl"
+     font-size="22px">%</text>
   <!-- Annunciator icons (top row) -->
-  <text id="icon_hold" x="24" y="20" class="lbl" font-size="12">HOLD</text>
-  <text id="icon_rel" x="78" y="20" class="lbl" font-size="12">REL</text>
-  <text id="icon_auto" x="128" y="20" class="lbl" font-size="12">AUTO</text>
-  <text id="icon_ahold" x="182" y="20" class="lbl" font-size="12">A-HD</text>
-  <text id="icon_crest" x="236" y="20" class="lbl" font-size="12">CREST</text>
-  <text id="icon_rec" x="294" y="20" class="lbl" font-size="12">REC</text>
-  <text id="icon_max" x="336" y="20" class="lbl" font-size="12">MAX</text>
-  <text id="icon_min" x="384" y="20" class="lbl" font-size="12">MIN</text>
-  <text id="icon_avg" x="432" y="20" class="lbl" font-size="12">AVG</text>
-  <text id="icon_battery_low" x="482" y="20" class="lbl" font-size="12">BAT</text>
+  <text
+     id="icon_hold"
+     x="24"
+     y="20"
+     class="lbl"
+     font-size="12">HOLD</text>
+  <text
+     id="icon_rel"
+     x="78"
+     y="20"
+     class="lbl"
+     font-size="12">REL</text>
+  <text
+     id="icon_auto"
+     x="128"
+     y="20"
+     class="lbl"
+     font-size="12">AUTO</text>
+  <text
+     id="icon_ahold"
+     x="182"
+     y="20"
+     class="lbl"
+     font-size="12">A-HD</text>
+  <text
+     id="icon_crest"
+     x="236"
+     y="20"
+     class="lbl"
+     font-size="12">CREST</text>
+  <text
+     id="icon_rec"
+     x="294"
+     y="20"
+     class="lbl"
+     font-size="12">REC</text>
+  <text
+     id="icon_max"
+     x="336"
+     y="20"
+     class="lbl"
+     font-size="12">MAX</text>
+  <text
+     id="icon_min"
+     x="384"
+     y="20"
+     class="lbl"
+     font-size="12">MIN</text>
+  <text
+     id="icon_avg"
+     x="432"
+     y="20"
+     class="lbl"
+     font-size="12">AVG</text>
+  <text
+     id="icon_battery_low"
+     x="482"
+     y="20"
+     class="lbl"
+     font-size="12">BAT</text>
 </svg>
