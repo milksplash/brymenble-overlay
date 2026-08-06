@@ -68,9 +68,18 @@
       }
     }
     if (skin.prefix) {
-      for (const [p, id] of Object.entries(skin.prefix)) {
-        if (id) show(id, state.prefix === p);
+      // Prefixes are unit-aware: { unit: { symbol: id } } so a skin can use
+      // different glyphs for the same symbol on different units (e.g. the
+      // special milli used only for voltage).
+      const ids = new Set();
+      for (const unit of Object.values(skin.prefix)) {
+        for (const id of Object.values(unit)) if (id) ids.add(id);
       }
+      const target =
+        state.unit && skin.prefix[state.unit]
+          ? skin.prefix[state.unit][state.prefix]
+          : null;
+      for (const id of ids) show(id, id === target);
     }
     if (skin.icons) {
       for (const [key, id] of Object.entries(skin.icons)) {
@@ -79,9 +88,21 @@
     }
     if (skin.battery_low) show(skin.battery_low, !!state.battery_low);
 
-    if (skin.function_label) {
-      const el = byId(skin.function_label);
-      if (el) el.textContent = state.function || '';
+    // Function display is skin-configurable:
+    //   { type: "text",  id }          -> write the function name into a text element
+    //   { type: "icons", map: {...} }  -> light icon(s) for the active function
+    const fn = skin.function;
+    if (fn) {
+      if (fn.type === 'text' && fn.id) {
+        const el = byId(fn.id);
+        if (el) el.textContent = state.function || '';
+      } else if (fn.type === 'icons' && fn.map) {
+        for (const [name, idOrIds] of Object.entries(fn.map)) {
+          const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+          const on = state.function === name;
+          for (const id of ids) if (id) show(id, on);
+        }
+      }
     }
     if (skin.rtc_label) {
       const el = byId(skin.rtc_label);

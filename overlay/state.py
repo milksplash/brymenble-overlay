@@ -48,6 +48,27 @@ def _cells_from_text(
     return cells
 
 
+def _fixed_text_cells(
+    text: str, display_digits: int, start_index: int, dp_indexes=()
+) -> List[Dict[str, Any]]:
+    """Place text at fixed digit positions, e.g. the meter's fixed 'OL' layout."""
+    cells = []
+    for i in range(display_digits):
+        pos = i - start_index
+        if 0 <= pos < len(text):
+            ch = text[pos]
+            cells.append(
+                {
+                    "char": ch,
+                    "segments": SEGMENTS.get(ch, []),
+                    "dp": i in dp_indexes,
+                }
+            )
+        else:
+            cells.append({"char": None, "segments": [], "dp": i in dp_indexes})
+    return cells
+
+
 def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
     display_digits = reading.display_digit_count or 5
     raw = abs(reading.raw_value)
@@ -104,7 +125,11 @@ def build_render_state(
     display_digits = reading.display_digit_count or 5
     if reading.is_overload:
         state["mode"] = "overload"
-        state["value_digits"] = _cells_from_text("OL", display_digits)
+        # The real meter lights "O" on digit 1 and "L" on digit 2, with the
+        # decimal point on digit 2 lit as well.
+        state["value_digits"] = _fixed_text_cells(
+            "OL", display_digits, start_index=1, dp_indexes=(2,)
+        )
     elif reading.is_ascii:
         state["mode"] = "ascii"
         state["value_digits"] = _cells_from_text(

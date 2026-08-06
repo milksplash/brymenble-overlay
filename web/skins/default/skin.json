@@ -13,12 +13,12 @@
     "°F": "unit_degf"
   },
   "prefix": {
-    "n": "prefix_n",
-    "µ": "prefix_mu",
-    "m": "prefix_m",
-    "k": "prefix_k",
-    "M": "prefix_M",
-    "G": "prefix_G"
+    "V": { "n": "prefix_n", "µ": "prefix_mu", "m": "prefix_m", "k": "prefix_k", "M": "prefix_M", "G": "prefix_G" },
+    "A": { "µ": "prefix_mu", "m": "prefix_m", "k": "prefix_k", "M": "prefix_M" },
+    "Ω": { "m": "prefix_m", "k": "prefix_k", "M": "prefix_M", "G": "prefix_G" },
+    "Hz": { "k": "prefix_k", "M": "prefix_M" },
+    "F": { "n": "prefix_n", "µ": "prefix_mu", "m": "prefix_m", "k": "prefix_k" },
+    "S": { "n": "prefix_n", "µ": "prefix_mu", "m": "prefix_m" }
   },
   "icons": {
     "hold": "icon_hold",
@@ -32,6 +32,9 @@
     "avg": "icon_avg"
   },
   "battery_low": "icon_battery_low",
-  "function_label": "fn_text",
+  "function": {
+    "type": "text",
+    "id": "fn_text"
+  },
   "rtc_label": "rtc_text"
 }
