@@ -1,0 +1,3 @@
+# Install the SDK first from its own repo, e.g.:
+#   pip install -e ../brymenble
+bleak>=0.21

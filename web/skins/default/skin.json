@@ -1,0 +1,37 @@
+{
+  "name": "default",
+  "digits": 5,
+  "digit_prefix": "digit",
+  "sign": "sign_neg",
+  "unit": {
+    "V": "unit_v",
+    "A": "unit_a",
+    "Ω": "unit_ohm",
+    "Hz": "unit_hz",
+    "%": "unit_pct",
+    "°C": "unit_degc",
+    "°F": "unit_degf"
+  },
+  "prefix": {
+    "n": "prefix_n",
+    "µ": "prefix_mu",
+    "m": "prefix_m",
+    "k": "prefix_k",
+    "M": "prefix_M",
+    "G": "prefix_G"
+  },
+  "icons": {
+    "hold": "icon_hold",
+    "relative": "icon_rel",
+    "auto": "icon_auto",
+    "auto_hold": "icon_ahold",
+    "crest": "icon_crest",
+    "record": "icon_rec",
+    "max": "icon_max",
+    "min": "icon_min",
+    "avg": "icon_avg"
+  },
+  "battery_low": "icon_battery_low",
+  "function_label": "fn_text",
+  "rtc_label": "rtc_text"
+}

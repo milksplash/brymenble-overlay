@@ -1,0 +1,6 @@
+body { background: transparent; margin: 0; }
+#meter { background: transparent; }
+.glass   { fill: #07130e; }
+.seg     { fill: #23d68c; }
+.lbl     { fill: #39b87f; font-family: Consolas, monospace; }
+.unitlbl { fill: #23d68c; font-family: Arial, sans-serif; }
