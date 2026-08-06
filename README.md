@@ -54,6 +54,17 @@ The render state served at `/state.json` is **semantic** (no skin knowledge):
 `value_digits` (per-digit `char`, `segments`, `dp`), `sign`, `unit`, `prefix`,
 `function`, `icons`, `battery_low`, `rtc`. Each skin maps that to its own ids.
 
+### `skin.json` schema highlights
+
+- **`prefix`** is unit-aware: `{ unit: { symbol: id } }`, so a skin can use
+  different glyphs for the same symbol on different units (e.g. a special
+  milli used only for voltage).
+- **`function`** is skin-configurable — two display methods:
+  - `{ "type": "text", "id": "fn_text" }` — write the function name into a
+    text element (used by `default`).
+  - `{ "type": "icons", "map": { "DCV": "icon_dc", "DC+ACV": ["icon_dc", "icon_ac"], … } }`
+    — light icon(s) for the active function (used by `official`).
+
 - `skins/default/` — self-made, distributed with this repo.
 - `skins/official/` — built from the official meter graphics; **gitignored,
   never published** (kept private per licensing considerations).
