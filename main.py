@@ -14,15 +14,40 @@ from overlay.server import StateHolder, run_server
 from overlay.state import build_render_state
 
 
+async def _reconnect_forever(
+    client: BrymenClient, holder: StateHolder, reconnect_interval: float
+) -> None:
+    """Keep trying to re-establish the BLE link, never raising.
+
+    A sleeping/powered-off meter must not kill the overlay server; it just
+    shows offline until the meter wakes up.
+    """
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            await client.ensure_connected(retries=2, retry_interval=5.0)
+            print("Reconnected and subscribed.")
+            holder.set({"connected": True, "mode": "idle"})
+            return
+        except (ConnectionError, asyncio.TimeoutError) as exc:
+            print(
+                f"Reconnect attempt {attempt} failed: {exc}. "
+                f"Retrying in {reconnect_interval:.0f}s..."
+            )
+            await asyncio.sleep(reconnect_interval)
+
+
 async def stream_loop(
-    client: BrymenClient, holder: StateHolder, no_data_timeout: float
+    client: BrymenClient, holder: StateHolder, no_data_timeout: float,
+    reconnect_interval: float,
 ) -> None:
     while True:
         frame = await client.wait_frame(timeout=no_data_timeout)
         if frame is None:
             print("No data for a while — meter may be off. Reconnecting...")
             holder.set({"connected": False, "mode": "offline"})
-            await client.ensure_connected(retries=3, retry_interval=5.0)
+            await _reconnect_forever(client, holder, reconnect_interval)
             continue
         info, readings = frame
         reading = next((r for r in readings if r is not None), None)
@@ -32,12 +57,14 @@ async def stream_loop(
 async def resolve_mac(mac: str) -> str:
     if mac:
         return mac
-    print("Scanning for BM78xBT meters...")
-    meters = await find_meters(timeout=5)
-    if not meters:
-        raise SystemExit("No BM78xBT meters found — power the meter on or pass a MAC.")
-    print(f"Found {meters[0].address} ({meters[0].name or 'unknown'}).")
-    return meters[0].address
+    while True:
+        print("Scanning for BM78xBT meters...")
+        meters = await find_meters(timeout=5)
+        if meters:
+            print(f"Found {meters[0].address} ({meters[0].name or 'unknown'}).")
+            return meters[0].address
+        print("No BM78xBT meters found — retrying in 10s...")
+        await asyncio.sleep(10)
 
 
 async def run(args) -> None:
@@ -49,7 +76,9 @@ async def run(args) -> None:
     try:
         await client.ensure_connected(retries=3, retry_interval=5.0)
         print("Connected. Add a Browser Source in OBS pointing at the URL above.")
-        await stream_loop(client, holder, args.no_data_timeout)
+        await stream_loop(
+            client, holder, args.no_data_timeout, args.reconnect_interval
+        )
     finally:
         await client.close()
         server.shutdown()
@@ -74,6 +103,10 @@ def main() -> None:
     parser.add_argument(
         "--no-data-timeout", type=float, default=3.0,
         help="seconds of silence before reconnect (default 3.0)",
+    )
+    parser.add_argument(
+        "--reconnect-interval", type=float, default=10.0,
+        help="seconds between reconnect attempts after a failure (default 10.0)",
     )
     args = parser.parse_args()
     try:
