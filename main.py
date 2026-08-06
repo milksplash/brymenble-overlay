@@ -7,6 +7,7 @@ Without a MAC, the first BM78xBT meter found by scanning is used.
 """
 import argparse
 import asyncio
+from typing import Optional
 
 from brymen import DEFAULT_PASSWORD, BrymenClient, find_meters
 
@@ -14,28 +15,12 @@ from overlay.server import StateHolder, run_server
 from overlay.state import build_render_state
 
 
-async def _reconnect_forever(
-    client: BrymenClient, holder: StateHolder, reconnect_interval: float
+def _on_reconnect(
+    attempt: int, max_retries: Optional[int], error: Exception
 ) -> None:
-    """Keep trying to re-establish the BLE link, never raising.
-
-    A sleeping/powered-off meter must not kill the overlay server; it just
-    shows offline until the meter wakes up.
-    """
-    attempt = 0
-    while True:
-        attempt += 1
-        try:
-            await client.ensure_connected(retries=2, retry_interval=5.0)
-            print("Reconnected and subscribed.")
-            holder.set({"connected": True, "mode": "idle"})
-            return
-        except (ConnectionError, asyncio.TimeoutError) as exc:
-            print(
-                f"Reconnect attempt {attempt} failed: {exc}. "
-                f"Retrying in {reconnect_interval:.0f}s..."
-            )
-            await asyncio.sleep(reconnect_interval)
+    """Progress callback for BrymenClient.ensure_connected(retries=None)."""
+    where = f" (of {max_retries})" if max_retries else ""
+    print(f"Reconnect attempt {attempt}{where} failed: {error}. Retrying...")
 
 
 async def stream_loop(
@@ -47,7 +32,16 @@ async def stream_loop(
         if frame is None:
             print("No data for a while — meter may be off. Reconnecting...")
             holder.set({"connected": False, "mode": "offline"})
-            await _reconnect_forever(client, holder, reconnect_interval)
+            # Never give up: retries=None keeps trying until the meter comes
+            # back (or the task is cancelled) — a power-off must not kill the
+            # overlay server.
+            await client.ensure_connected(
+                retries=None,
+                retry_interval=reconnect_interval,
+                on_retry=_on_reconnect,
+            )
+            print("Reconnected and subscribed.")
+            holder.set({"connected": True, "mode": "idle"})
             continue
         info, readings = frame
         reading = next((r for r in readings if r is not None), None)
