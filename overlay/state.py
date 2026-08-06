@@ -61,8 +61,11 @@ def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
             decimals = 0
         decimals = min(decimals, 6)
         value = raw / (10 ** decimals)
-        text = f"{value:.{decimals}f}"
-        dp_index = decimal_pos - 1
+        number_str = f"{value:.{decimals}f}"
+        # The decimal point is a "dp" flag on a digit cell, not its own cell —
+        # strip it so values stay right-aligned within the display digit count.
+        text = number_str.replace(".", "")
+        dp_index = number_str.index(".") if "." in number_str else None
     return _cells_from_text(text, display_digits, dp_index)
 
 
