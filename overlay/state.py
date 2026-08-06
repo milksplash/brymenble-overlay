@@ -27,12 +27,17 @@ SEGMENTS: Dict[str, List[str]] = {
 
 
 def _cells_from_text(
-    text: str, display_digits: int, dp_index: Optional[int] = None
+    text: str, display_digits: int, dp_index: Optional[int] = None, fill: str = " "
 ) -> List[Dict[str, Any]]:
-    """Right-aligned digit cells for a display text string."""
+    """Right-aligned digit cells for a display text string.
+
+    ``fill`` is the character used for leading positions: " " (blank) for
+    text displays, or "0" for numeric readings (the meter shows leading
+    zeros, e.g. "00.250").
+    """
     text = text.strip()
     if len(text) < display_digits:
-        text = " " * (display_digits - len(text)) + text
+        text = fill * (display_digits - len(text)) + text
     cells = []
     for i, ch in enumerate(text):
         if ch == " ":
@@ -90,7 +95,7 @@ def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
         # so the dp sits after digit index (decimal_pos - 1). Using the literal
         # "." position in number_str would shift it one to the right.
         dp_index = decimal_pos - 1 if decimal_pos > 0 else None
-    return _cells_from_text(text, display_digits, dp_index)
+    return _cells_from_text(text, display_digits, dp_index, fill="0")
 
 
 def build_render_state(
@@ -125,10 +130,9 @@ def build_render_state(
     display_digits = reading.display_digit_count or 5
     if reading.is_overload:
         state["mode"] = "overload"
-        # The real meter lights "O" on digit 1 and "L" on digit 2, with the
-        # decimal point on digit 2 lit as well.
+        # The real meter lights "O" on digit 1 and "L" on digit 2.
         state["value_digits"] = _fixed_text_cells(
-            "OL", display_digits, start_index=1, dp_indexes=(2,)
+            "OL", display_digits, start_index=1, dp_indexes=()
         )
     elif reading.is_ascii:
         state["mode"] = "ascii"

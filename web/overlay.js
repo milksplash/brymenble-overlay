@@ -46,8 +46,28 @@
 
   const SEGS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'dp'];
 
+  // For icon-type function display, precompute a reverse map so shared icons
+  // (e.g. icon_dc used by DCV, DCmA, DCA, ...) light correctly regardless of
+  // map iteration order.
+  const iconFunctions = new Map();
+  if (skin.function && skin.function.type === 'icons' && skin.function.map) {
+    for (const [name, idOrIds] of Object.entries(skin.function.map)) {
+      const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+      for (const id of ids) {
+        if (!id) continue;
+        if (!iconFunctions.has(id)) iconFunctions.set(id, new Set());
+        iconFunctions.get(id).add(name);
+      }
+    }
+  }
+
   function apply(state) {
     svg.style.visibility = 'visible';
+
+    // Hide elements the skin marks as never-driven (e.g. unit_db on BM78xBT).
+    if (Array.isArray(skin.hidden)) {
+      for (const id of skin.hidden) if (id) show(id, false);
+    }
 
     // digits (right-aligned in the cell)
     const cells = state.value_digits || [];
@@ -97,10 +117,8 @@
         const el = byId(fn.id);
         if (el) el.textContent = state.function || '';
       } else if (fn.type === 'icons' && fn.map) {
-        for (const [name, idOrIds] of Object.entries(fn.map)) {
-          const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
-          const on = state.function === name;
-          for (const id of ids) if (id) show(id, on);
+        for (const [id, names] of iconFunctions) {
+          show(id, names.has(state.function));
         }
       }
     }
