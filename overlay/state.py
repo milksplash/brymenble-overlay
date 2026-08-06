@@ -65,7 +65,10 @@ def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
         # The decimal point is a "dp" flag on a digit cell, not its own cell —
         # strip it so values stay right-aligned within the display digit count.
         text = number_str.replace(".", "")
-        dp_index = number_str.index(".") if "." in number_str else None
+        # Protocol Decimal Point Map: decimal_pos = number of integer digits,
+        # so the dp sits after digit index (decimal_pos - 1). Using the literal
+        # "." position in number_str would shift it one to the right.
+        dp_index = decimal_pos - 1 if decimal_pos > 0 else None
     return _cells_from_text(text, display_digits, dp_index)
 
 

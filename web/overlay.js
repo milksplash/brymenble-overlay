@@ -32,6 +32,7 @@
   const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
   const root = doc.documentElement;
   for (const attr of Array.from(root.attributes)) {
+    if (attr.name === 'id') continue;  // keep our container id (#meter); skins carry their own (e.g. svg1)
     svg.setAttribute(attr.name, attr.value);
   }
   while (root.firstChild) svg.appendChild(root.firstChild);

@@ -55,16 +55,36 @@ DEMO_STATES = [
             is_auto_range=True),
 ]
 
+# Every decimal-point position on a 5-digit display (0 = no dp, 1..5 = dp
+# after digit index 0..4). Same raw value everywhere so the dp position is
+# unambiguous for manual inspection.
+DP_DEMO_STATES = [
+    reading(function_name="DP", unit="V", raw_value=12345, decimal_pos=p,
+            prefix="", display_digit_count=5)
+    for p in range(6)
+]
 
-async def main(port: int) -> None:
+
+async def main(port: int, dp_demo: bool) -> None:
     server, holder = run_server("127.0.0.1", port)
     print(f"Demo overlay: http://127.0.0.1:{port}/?skin=default")
+    if dp_demo:
+        print("DP demo: cycling decimal point positions 0..5 "
+              "(label shown bottom-left).")
     try:
         i = 0
         while True:
-            holder.set(build_render_state(INFO, DEMO_STATES[i % len(DEMO_STATES)]))
+            if dp_demo:
+                p = i % len(DP_DEMO_STATES)
+                state = build_render_state(INFO, DP_DEMO_STATES[p])
+                state["rtc"] = f"dp={p}"
+                period = 2.5
+            else:
+                state = build_render_state(INFO, DEMO_STATES[i % len(DEMO_STATES)])
+                period = 1.5
+            holder.set(state)
             i += 1
-            await asyncio.sleep(1.5)
+            await asyncio.sleep(period)
     finally:
         server.shutdown()
 
@@ -72,8 +92,12 @@ async def main(port: int) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="BM78xBT overlay demo")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument(
+        "--dp", action="store_true",
+        help="cycle through every decimal point position (for manual inspection)",
+    )
     args = parser.parse_args()
     try:
-        asyncio.run(main(args.port))
+        asyncio.run(main(args.port, args.dp))
     except KeyboardInterrupt:
         print("\nStopped.")
