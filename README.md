@@ -3,19 +3,33 @@
 Emulates the BM78xBT multimeter LCD as a transparent overlay for OBS (or any
 browser), driven live by the `brymenble` SDK over BLE.
 
-## Requirements
+## Setup
 
-- Python 3.9+
-- The `brymenble` SDK — install from its own repo:
-  `pip install -e ../brymenble`
+```bash
+python -m venv .venv
+.venv\Scripts\python -m pip install -e ../brymenble
+```
+
+The `brymenble` editable install also pulls in its `bleak` dependency.
 
 ## Run
 
 ```bash
+.venv\Scripts\python main.py [MAC] [--password 0000] [--port 8765]
+```
+
+Or activate the venv first, then use plain `python`:
+
+```powershell
+.venv\Scripts\Activate.ps1
 python main.py [MAC] [--password 0000] [--port 8765]
 ```
 
-Without a MAC, the first BM78xBT meter found by scanning is used.
+Without a MAC, the first BM78xBT meter found by scanning is used. The server
+reconnects automatically if the meter powers off, and never crashes.
+
+Demo mode (no meter needed): `python demo.py [--port 8765]`.
+Inspect decimal-point placement: `python demo.py --port 8765 --dp`.
 
 ## OBS setup
 
