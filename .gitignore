@@ -6,3 +6,6 @@ __pycache__/
 
 # Private skin — never commit or publish
 web/skins/official/
+
+# Local meter verification forms — never commit or publish
+docs/meter-verification.*
