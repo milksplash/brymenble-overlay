@@ -4,7 +4,15 @@
   <meta charset="utf-8">
   <title>BM78xBT Display Overlay</title>
   <style>
-    html, body { margin: 0; padding: 0; background: transparent; }
+    html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+    /* Scale the meter to the Browser Source / display width, preserving the
+       skin's aspect ratio (via its viewBox) and keeping the overlay pixel-
+       perfect for OBS at any canvas resolution. */
+    #meter {
+      display: block;
+      width: 100vw;
+      height: auto;
+    }
   </style>
 </head>
 <body>

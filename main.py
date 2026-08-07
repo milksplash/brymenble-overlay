@@ -1,9 +1,11 @@
 """BM78xBT display overlay — serve the emulated meter display to OBS.
 
 Usage:
-    python main.py [MAC] [--password 0000] [--host 127.0.0.1] [--port 8765]
+    python main.py [MAC] [--password 0000] [--host 0.0.0.0] [--port 8765]
 
-Without a MAC, the first BM78xBT meter found by scanning is used.
+Binds to all interfaces (0.0.0.0) by default so OBS on any machine on the
+local network can point a Browser Source at this server. Without a MAC, the
+first BM78xBT meter found by scanning is used.
 """
 import argparse
 import asyncio
@@ -11,7 +13,7 @@ from typing import Optional
 
 from brymen import DEFAULT_PASSWORD, BrymenClient, find_meters
 
-from overlay.server import StateHolder, run_server
+from overlay.server import StateHolder, display_host, lan_ip, run_server
 from overlay.state import build_render_state
 
 
@@ -64,7 +66,10 @@ async def resolve_mac(mac: str) -> str:
 async def run(args) -> None:
     mac = await resolve_mac(args.mac)
     server, holder = run_server(args.host, args.port)
-    print(f"Overlay server running at http://{args.host}:{args.port}/")
+    print(f"Overlay server running at http://{display_host(args.host)}:{args.port}/")
+    if args.host in ("0.0.0.0", "::", ""):
+        print("  LAN: "
+              f"http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
     print(f"Connecting to {mac}...")
     client = BrymenClient(mac, args.password, connect_timeout=5.0)
     try:
@@ -89,7 +94,8 @@ def main() -> None:
         help="connection password (default 0000)",
     )
     parser.add_argument(
-        "--host", default="127.0.0.1", help="bind address (default 127.0.0.1)",
+        "--host", default="0.0.0.0",
+        help="bind address (default 0.0.0.0 = all interfaces, for the LAN)",
     )
     parser.add_argument(
         "--port", type=int, default=8765, help="HTTP port (default 8765)",

@@ -20,6 +20,20 @@ SEGMENTS: Dict[str, List[str]] = {
     "7": ["a", "b", "c"],
     "8": ["a", "b", "c", "d", "e", "f", "g"],
     "9": ["a", "b", "c", "d", "f", "g"],
+    # ASCII display letters — lit on the 5-digit display for text states
+    # (e.g. AutoCheck AUTO shows "Auto", errors show "InEr"/"EF-H"/"EF-L").
+    # These are distinct from the static auto-ranging annunciator
+    # (icons.auto -> icon_auto).
+    "A": ["a", "b", "c", "e", "f", "g"],
+    "E": ["a", "d", "e", "f", "g"],
+    "F": ["a", "e", "f", "g"],
+    "H": ["b", "c", "e", "f", "g"],
+    "I": ["b", "c"],
+    "n": ["c", "e", "g"],
+    "o": ["c", "d", "e", "g"],
+    "r": ["e", "g"],
+    "t": ["d", "e", "f", "g"],
+    "u": ["c", "d", "e"],
     "-": ["g"],
     "O": ["a", "b", "c", "d", "e", "f"],
     "L": ["d", "e", "f"],
@@ -27,17 +41,24 @@ SEGMENTS: Dict[str, List[str]] = {
 
 
 def _cells_from_text(
-    text: str, display_digits: int, dp_index: Optional[int] = None, fill: str = " "
+    text: str,
+    display_digits: int,
+    dp_index: Optional[int] = None,
+    fill: str = " ",
+    align: str = "right",
 ) -> List[Dict[str, Any]]:
-    """Right-aligned digit cells for a display text string.
+    """Digit cells for a display text string.
 
-    ``fill`` is the character used for leading positions: " " (blank) for
-    text displays, or "0" for numeric readings (the meter shows leading
-    zeros, e.g. "00.250").
+    ``fill`` is the character used for padding: " " (blank) for text
+    displays, or "0" for numeric readings (the meter shows leading zeros,
+    e.g. "00.250"). ``align`` controls which side is padded: "right" keeps
+    the text ending at the last digit (numeric readings), "left" starts it
+    at digit 0 (ASCII text such as "Auto").
     """
     text = text.strip()
     if len(text) < display_digits:
-        text = fill * (display_digits - len(text)) + text
+        pad = fill * (display_digits - len(text))
+        text = text + pad if align == "left" else pad + text
     cells = []
     for i, ch in enumerate(text):
         if ch == " ":
@@ -136,9 +157,11 @@ def build_render_state(
         )
     elif reading.is_ascii:
         state["mode"] = "ascii"
-        state["value_digits"] = _cells_from_text(
-            reading.ascii_text or "---", display_digits
-        )
+        text = reading.ascii_text or "---"
+        # "EF-H"/"EF-L" are right-aligned on the meter; other text states
+        # ("Auto", "InEr", dashes) are left-aligned.
+        align = "right" if text in ("EF-H", "EF-L") else "left"
+        state["value_digits"] = _cells_from_text(text, display_digits, align=align)
     else:
         state["mode"] = "numeric"
         state["value_digits"] = _numeric_cells(reading)

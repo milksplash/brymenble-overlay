@@ -5,6 +5,7 @@ The OBS Browser Source polls /state.json — no WebSocket is needed at this
 frame rate (the meter streams at a few Hz).
 """
 import json
+import socket
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -110,3 +111,28 @@ def run_server(host: str = "127.0.0.1", port: int = 8765):
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     return httpd, holder
+
+
+def lan_ip() -> str:
+    """Return the primary LAN IPv4 address of this machine.
+
+    Uses a UDP connect() to a public IP — this selects the outgoing route
+    without actually sending any packets, so it works offline too.
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
+def display_host(bind_host: str) -> str:
+    """Human-friendly host to show in the console for a given bind address."""
+    if bind_host in ("127.0.0.1", "localhost"):
+        return "127.0.0.1"
+    if bind_host in ("0.0.0.0", "::", ""):
+        return lan_ip()
+    return bind_host

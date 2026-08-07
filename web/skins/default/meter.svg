@@ -22,9 +22,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="2.2425386"
-     inkscape:cx="271.79019"
-     inkscape:cy="129.98661"
+     inkscape:zoom="1.1212693"
+     inkscape:cx="276.02646"
+     inkscape:cy="45.038244"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -55,6 +55,14 @@
      class="lbl"
      font-size="9px"
      style="display:inline">8888-88-88 88:88:88.888</text>
+  <!-- Reading value (monospace text; the 7-segment bars are hidden in CSS) -->
+  <text
+     id="value_text"
+     x="317"
+     y="126"
+     class="val"
+     font-size="68px"
+     text-anchor="end">88888</text>
   <!-- Negative sign -->
   <rect
      id="sign_neg"
@@ -426,7 +434,7 @@
   <text
      id="unit_degc"
      x="500"
-     y="110"
+     y="107.32922"
      class="unitlbl"
      font-size="18px">°C</text>
   <text
@@ -438,7 +446,7 @@
   <text
      id="unit_degf"
      x="500"
-     y="138"
+     y="135.32922"
      class="unitlbl"
      font-size="18px">°F</text>
   <text
@@ -447,6 +455,17 @@
      y="166"
      class="unitlbl"
      font-size="22px">Ω</text>
+  <text
+     id="unit_siemen"
+     x="446.83984"
+     y="166.32812"
+     class="unitlbl"
+     font-size="22px"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"><tspan
+       sodipodi:role="line"
+       id="tspan2"
+       x="446.83984"
+       y="166.32812">S</tspan></text>
   <text
      id="unit_hz"
      x="428"
