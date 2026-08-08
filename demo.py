@@ -19,7 +19,7 @@ Interactive controls (Windows console — works in VS Code / PowerShell):
     c          -> toggle auto-cycle through every item
     q          -> quit
 
-Per-function demo values (unit, prefix, raw_value, decimal_pos, digits) live
+Per-function demo values (unit, prefix, mantissa, decimal_pos, digits) live
 in the FUNCTION_SPECS dict below — edit that dict to change what the demo
 shows. The DCV entry (60780 / decimal_pos 3) renders as "607.80", the
 highest reasonable value for a 5-digit meter (60.780 and 6.0780 are the same
@@ -49,7 +49,7 @@ except ImportError:        # pragma: no cover - non-Windows fallback
 
 def reading(**kw) -> ReadingPacket:
     defaults = dict(
-        function_name="DCV", unit="V", raw_value=60780, decimal_pos=3,
+        function_name="DCV", unit="V", mantissa=60780, decimal_pos=3,
         prefix="", display_digit_count=5, logging_data_set_id=1,
         device_reading_pk_id=1, device_type=1, status0=0, status1=0,
         rtc=RtcTime(2026, 8, 6, 12, 34, 56, 789),
@@ -69,7 +69,9 @@ INFO = InfoPacket(
 )
 
 # --- Per-function demo values --------------------------------------------------
-# name -> (unit, prefix, raw_value, decimal_pos, display_digits)
+# name -> (unit, prefix, mantissa, decimal_pos, display_digits)
+# (mantissa is a magnitude; a negative entry below means "negative reading",
+# i.e. sets the sign flag — see _spec_reading.)
 # This is the single place to edit the demo values. Every function the SDK
 # decodes must have an entry here (a missing entry raises KeyError loudly so
 # nothing is silently shown with the wrong value).
@@ -91,7 +93,7 @@ FUNCTION_SPECS = {
     "ACmA":              ("A",  "m",     60780, 3, 5),
     "DCmA":              ("A",  "m",     60780, 3, 5),
     "DC+ACmA":           ("A",  "m",     60780, 3, 5),
-    "%4~20mA":           ("%4~20mA", "", 60780, 3, 5),
+    "%4~20mA":           ("%4~20mA", "", 6078,  2, 4),
     "ACA":               ("A",  "",      60780, 1, 5),
     "DCA":               ("A",  "",      60780, 1, 5),
     "DC+ACA":            ("A",  "",      60780, 1, 5),
@@ -127,11 +129,11 @@ def _spec_reading(name: str, **overrides) -> ReadingPacket:
     unit, prefix, raw, dp, digits = FUNCTION_SPECS[name]
     kwargs = dict(
         function_name=name, unit=unit, prefix=prefix,
-        raw_value=raw, decimal_pos=dp, display_digit_count=digits,
+        mantissa=abs(raw), decimal_pos=dp, display_digit_count=digits,
     )
     # A negative spec value means a negative reading — set the sign flag too,
-    # mirroring the real meter (the sign flag and the signed raw value encode
-    # the same thing). Explicit overrides can still force it either way.
+    # mirroring the real meter (mantissa is a magnitude; the sign lives only
+    # in the flag). Explicit overrides can still force it either way.
     if raw < 0 and "is_negative" not in overrides:
         kwargs["is_negative"] = True
     kwargs.update(overrides)                     # overrides win over the spec
@@ -145,7 +147,7 @@ def function_items() -> List[Tuple[str, ReadingPacket]]:
         if name in ASCII_FUNCTIONS:
             text, code = ASCII_FUNCTIONS[name]
             r = reading(
-                function_name=name, unit="", prefix="", raw_value=code,
+                function_name=name, unit="", prefix="", mantissa=code,
                 decimal_pos=0, display_digit_count=5,
                 is_ascii=True, ascii_text=text,
             )
@@ -165,9 +167,9 @@ def flag_items() -> List[Tuple[str, ReadingPacket]]:
         ("DCV (HOLD)", _spec_reading("DCV", is_held=True)),
         ("T1 (negative)", _spec_reading("T1", is_negative=True)),
         ("ACV (overload)",
-         _spec_reading("ACV", raw_value=0, decimal_pos=0, is_overload=True)),
+         _spec_reading("ACV", mantissa=0, decimal_pos=0, is_overload=True)),
         ("AUTO (ASCII 'Auto')",
-         _spec_reading("AUTO", raw_value=1, decimal_pos=0,
+         _spec_reading("AUTO", mantissa=1, decimal_pos=0,
                        is_ascii=True, ascii_text="Auto", is_auto_range=True)),
         ("Resistance (REC)", _spec_reading("Resistance", is_recording=True)),
         ("DCmA (REL)",
@@ -197,7 +199,7 @@ def ascii_items() -> List[Tuple[str, ReadingPacket]]:
     items = []
     for code, text in constants.ASCII_READING_MAP.items():
         r = reading(
-            function_name="", unit="", prefix="", raw_value=code,
+            function_name="", unit="", prefix="", mantissa=code,
             decimal_pos=0, display_digit_count=5,
             is_ascii=True, ascii_text=text,
         )

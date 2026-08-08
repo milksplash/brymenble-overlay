@@ -97,16 +97,15 @@ def _fixed_text_cells(
 
 def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
     display_digits = reading.display_digit_count or 5
-    raw = abs(reading.raw_value)
+    # mantissa is the SDK's canonical magnitude — no abs() needed (the sign is
+    # rendered separately via state["sign"] = is_negative).
+    raw = reading.mantissa
     decimal_pos = reading.decimal_pos
     if decimal_pos == 0:
         text = str(raw)
         dp_index = None
     else:
-        decimals = display_digits - decimal_pos
-        if decimals < 0:
-            decimals = 0
-        decimals = min(decimals, 6)
+        decimals = reading.decimals
         value = raw / (10 ** decimals)
         number_str = f"{value:.{decimals}f}"
         # The decimal point is a "dp" flag on a digit cell, not its own cell —

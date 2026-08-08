@@ -45,8 +45,8 @@ async def stream_loop(
             print("Reconnected and subscribed.")
             holder.set({"connected": True, "mode": "idle"})
             continue
-        info, readings = frame
-        reading = next((r for r in readings if r is not None), None)
+        info = frame.info
+        reading = next((r for r in frame.readings if r is not None), None)
         holder.set(build_render_state(info, reading))
 
 
