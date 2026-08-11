@@ -11,7 +11,7 @@ import argparse
 import asyncio
 from typing import Optional
 
-from brymen import DEFAULT_PASSWORD, BrymenClient, find_meters
+from brymen import DEFAULT_PASSWORD, BrymenClient, find_first_meter
 
 from overlay.server import StateHolder, display_host, lan_ip, run_server
 from overlay.state import build_render_state
@@ -62,14 +62,15 @@ async def stream_loop(
 async def resolve_mac(mac: str) -> str:
     if mac:
         return mac
-    while True:
-        print("Scanning for BM78xBT meters...")
-        meters = await find_meters(timeout=5)
-        if meters:
-            print(f"Found {meters[0].address} ({meters[0].name or 'unknown'}).")
-            return meters[0].address
-        print("No BM78xBT meters found — retrying in 10s...")
-        await asyncio.sleep(10)
+    meter = await find_first_meter(
+        timeout=5,
+        retry_interval=10,
+        on_retry=lambda attempt: print("No BM78xBT meters found — retrying in 10s..."),
+    )
+    # retry_interval > 0 -> find_first_meter loops until a meter appears.
+    assert meter is not None
+    print(f"Found {meter.address} ({meter.name or 'unknown'}).")
+    return meter.address
 
 
 async def run(args) -> None:

@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from brymen import constants
 from brymen.formatter import format_reading
-from brymen.parsers import InfoPacket, ReadingPacket, RtcTime
+from brymen.parsers import InfoPacket, ReadingPacket
 
 from overlay.server import display_host, lan_ip, run_server
 from overlay.state import build_render_state
@@ -48,25 +48,12 @@ except ImportError:        # pragma: no cover - non-Windows fallback
 # --- Reading factory ----------------------------------------------------------
 
 def reading(**kw) -> ReadingPacket:
-    defaults = dict(
-        function_name="DCV", unit="V", mantissa=60780, decimal_pos=3,
-        prefix="", display_digit_count=5, logging_data_set_id=1,
-        device_reading_pk_id=1, device_type=1, status0=0, status1=0,
-        rtc=RtcTime(2026, 8, 6, 12, 34, 56, 789),
-        is_crest=False, is_relative=False, is_held=False, is_auto_range=False,
-        is_auto_hold=False, is_ascii=False, is_negative=False,
-        is_overload=False, is_recording=False, is_max=False, is_min=False,
-        is_avg=False, ascii_text=None, crc_ok=True, raw=b"",
-    )
-    defaults.update(kw)
-    return ReadingPacket(**defaults)
+    """Build a ReadingPacket from the SDK's example defaults (plus overrides)."""
+    return ReadingPacket.example(**kw)
 
 
-INFO = InfoPacket(
-    device_category=2, mac=bytes.fromhex("001122334455"), battery_status=0,
-    power_source=0, reading_packet_count=4, device_reading_pk_id=1,
-    crc_ok=True, raw=b"",
-)
+# A realistic default Device Information packet (Multimeter, 00:11:22:33:44:55).
+INFO = InfoPacket.example()
 
 # --- Per-function demo values --------------------------------------------------
 # name -> (unit, prefix, mantissa, decimal_pos, display_digits)

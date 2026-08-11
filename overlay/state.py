@@ -97,17 +97,18 @@ def _fixed_text_cells(
 
 def _numeric_cells(reading: ReadingPacket) -> List[Dict[str, Any]]:
     display_digits = reading.display_digit_count or 5
-    # mantissa is the SDK's canonical magnitude — no abs() needed (the sign is
-    # rendered separately via state["sign"] = is_negative).
-    raw = reading.mantissa
     decimal_pos = reading.decimal_pos
     if decimal_pos == 0:
-        text = str(raw)
+        text = str(reading.mantissa)
         dp_index = None
     else:
+        # Derive from the SDK's canonical value surface (single source of
+        # truth) instead of re-scaling the raw fields here. abs() because the
+        # sign is rendered separately via state["sign"] = is_negative; value
+        # is never None in the numeric branch (overload/ASCII are handled
+        # earlier in build_render_state).
         decimals = reading.decimals
-        value = raw / (10 ** decimals)
-        number_str = f"{value:.{decimals}f}"
+        number_str = f"{abs(reading.value):.{decimals}f}"
         # The decimal point is a "dp" flag on a digit cell, not its own cell —
         # strip it so values stay right-aligned within the display digit count.
         text = number_str.replace(".", "")
@@ -185,9 +186,6 @@ def build_render_state(
 
     if info is not None:
         state["battery_low"] = info.battery_status == constants.BATTERY_LOW
-        rtc = reading.rtc
-        state["rtc"] = (
-            f"{rtc.year}-{rtc.month:02d}-{rtc.date:02d} "
-            f"{rtc.hour:02d}:{rtc.minute:02d}:{rtc.second:02d}.{rtc.millisecond:03d}"
-        )
+        # SDK's canonical clock string (single source of truth).
+        state["rtc"] = reading.rtc.isoformat() if reading.rtc else None
     return state
