@@ -1,0 +1,5 @@
+# Runtime deps (install the SDK first, see README)
+-r requirements.txt
+
+# Test-only deps
+pytest

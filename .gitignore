@@ -9,3 +9,7 @@ web/skins/official/
 
 # Local meter verification forms — never commit or publish
 docs/meter-verification.*
+
+# Local reference material — never commit or publish
+*.pptx
+*.pdf

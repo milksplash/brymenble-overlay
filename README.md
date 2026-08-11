@@ -48,6 +48,19 @@ reasonable value for a 5-digit display). Start elsewhere with
 inspect decimal-point placement with `--dp`. Interactive keys need a local
 Windows console; on other platforms the demo auto-cycles.
 
+## Tests
+
+Offline unit tests (no meter or OBS needed):
+
+```bash
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+.venv\Scripts\python -m pytest
+```
+
+These cover the render-state builder (`overlay/state.py`), the HTTP server
+(`overlay/server.py`, including the path-traversal guard), and skin
+validation via `tools/check_skin.py` (also run in CI).
+
 ## OBS setup
 
 1. Run `python main.py`. You'll see:

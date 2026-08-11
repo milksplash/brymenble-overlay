@@ -110,9 +110,12 @@ FUNCTION_SPECS = {
     "Hz of Line Signal": ("Hz", "",      60780, 2, 5),
 }
 
-# Electric-field functions show the meter's ASCII EF-L / EF-H glyphs
-# (ASCII_READING_MAP 0x0B / 0x0A) instead of a numeric reading.
+# Functions that show an ASCII glyph instead of a numeric reading. AUTO is
+# the auto-ranging function (the meter displays the ASCII "Auto" glyph while
+# autoranging); EF-Lo/EF-Hi show the electric-field glyphs (ASCII_READING_MAP
+# 0x0B / 0x0A).
 ASCII_FUNCTIONS = {
+    "AUTO": ("Auto", 0x000001),
     "EF-Lo": ("EF-L", 0x00000B),
     "EF-Hi": ("EF-H", 0x00000A),
 }
@@ -146,10 +149,12 @@ def function_items() -> List[Tuple[str, ReadingPacket]]:
     for name in constants.FUNCTION_NAMES.values():
         if name in ASCII_FUNCTIONS:
             text, code = ASCII_FUNCTIONS[name]
+            # AUTO is always auto-ranging, so the AUTO annunciator lights too.
             r = reading(
                 function_name=name, unit="", prefix="", mantissa=code,
                 decimal_pos=0, display_digit_count=5,
                 is_ascii=True, ascii_text=text,
+                is_auto_range=(name == "AUTO"),
             )
         else:
             r = _spec_reading(name)
@@ -349,7 +354,7 @@ async def run(host: str, port: int, dp_demo: bool, start: Optional[str],
     if dp_demo:
         items = dp_items()
     else:
-        items = function_items() + flag_items() + ascii_items() + [light_all_item()]
+        items = [light_all_item()] + function_items() + flag_items() + ascii_items()
     idx = _resolve_start(items, start)
     period = 2.5 if dp_demo else 1.5
 

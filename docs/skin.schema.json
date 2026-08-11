@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/skins/skin.schema.json",
+  "title": "BM78xBT overlay skin.json",
+  "description": "Declarative config for an overlay skin under web/skins/<name>/.",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": { "type": "string", "description": "Skin name; should match the folder name." },
+    "script": { "type": "string", "description": "Render module filename (default skin.js)." },
+    "renderer": {
+      "type": "string",
+      "enum": ["lcd"],
+      "description": "Use the built-in generic LCD renderer instead of a script file."
+    },
+    "digits": { "type": "integer", "minimum": 1, "description": "Number of 7-seg digit cells (text-based skins can omit this)." },
+    "digit_prefix": { "type": "string", "description": "Segment ids are <digit_prefix><d>_<seg> (required only with digits)." },
+    "no_dp": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "description": "Digit indexes that have no decimal-point element (e.g. the rightmost digit)."
+    },
+    "sign": { "type": "string", "description": "Negative-sign element id." },
+    "unit": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Unit -> element id map (keys: V, A, Ω, S, F, Hz, %, %4~20mA, °C, °F)."
+    },
+    "prefix": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      },
+      "description": "Unit -> prefix -> element id map. Prefix ids are shared across units."
+    },
+    "icons": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Annunciator key -> element id (hold, relative, auto, auto_hold, crest, record, max, min, avg)."
+    },
+    "battery_low": { "type": "string", "description": "Battery-low element id." },
+    "hidden": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Element ids the skin owns but never drives."
+    },
+    "function": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "type": { "const": "icons" },
+            "map": {
+              "type": "object",
+              "additionalProperties": {
+                "type": ["string", "array"],
+                "items": { "type": "string" }
+              },
+              "description": "Function name -> element id(s). Shared ids light for every function listing them."
+            }
+          },
+          "required": ["type", "map"]
+        },
+        {
+          "properties": {
+            "type": { "const": "text" },
+            "id": { "type": "string", "description": "Element whose textContent shows the function name." }
+          },
+          "required": ["type", "id"]
+        }
+      ]
+    },
+    "function_labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Per-function display overrides for text-type function labels."
+    },
+    "rtc_label": { "type": "string", "description": "Element whose textContent shows the timestamp." },
+    "unit_labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Non-exclusive unit label lookup: '<prefix>|<unit>' -> label (e.g. 'm|V' -> 'mV'). Used by text-based skins like fn_text."
+    },
+    "right_aligned": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Function names whose reading is right-aligned (built-in LCD renderer)."
+    }
+  },
+  "additionalProperties": true
+}

@@ -27,24 +27,33 @@ def _on_reconnect(
 
 async def stream_loop(
     client: BrymenClient, holder: StateHolder, no_data_timeout: float,
-    reconnect_interval: float,
+    reconnect_interval: float, link_down_grace: float = 2.0,
 ) -> None:
-    while True:
-        frame = await client.wait_frame(timeout=no_data_timeout)
-        if frame is None:
-            print("No data for a while — meter may be off. Reconnecting...")
-            holder.set({"connected": False, "mode": "offline"})
-            # Never give up: retries=None keeps trying until the meter comes
-            # back (or the task is cancelled) — a power-off must not kill the
-            # overlay server.
-            await client.ensure_connected(
-                retries=None,
-                retry_interval=reconnect_interval,
-                on_retry=_on_reconnect,
-            )
-            print("Reconnected and subscribed.")
-            holder.set({"connected": True, "mode": "idle"})
-            continue
+    """Stream frames into the render state; reconnects are handled by the SDK.
+
+    ``BrymenClient.read_stream()`` owns the pause-vs-power-off decision: a
+    data gap with the BLE link up is a function-switch pause (the last
+    reading stays on screen — no reconnect); a link drop is confirmed with
+    ``link_down_grace``, then reconnected forever (``retries=None``) so a
+    power-off never kills the overlay server.
+    """
+    def _on_lost(reason: str) -> None:
+        print("No data for a while — meter may be off. Reconnecting...")
+        holder.set({"connected": False, "mode": "offline"})
+
+    def _on_reconnected() -> None:
+        print("Reconnected and subscribed.")
+        holder.set({"connected": True, "mode": "idle"})
+
+    async for frame in client.read_stream(
+        no_data_timeout=no_data_timeout,
+        link_down_grace=link_down_grace,
+        retries=None,
+        retry_interval=reconnect_interval,
+        on_retry=_on_reconnect,
+        on_lost=_on_lost,
+        on_reconnected=_on_reconnected,
+    ):
         info = frame.info
         reading = next((r for r in frame.readings if r is not None), None)
         holder.set(build_render_state(info, reading))
