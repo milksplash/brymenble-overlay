@@ -8,6 +8,13 @@ from typing import Any, Dict, List, Optional
 from brymen import constants
 from brymen.parsers import InfoPacket, ReadingPacket
 
+# Display accommodation (NOT protocol behavior): the meter's LCD shows "----"
+# (4 dashes) for a temperature overload, even though the protocol only sends
+# the OL flag (no ASCII bit — real-meter capture cap-010 in the SDK fixtures).
+# The SDK stays protocol-faithful ("OL"); the overlay mirrors the actual LCD.
+TEMP_OVERLOAD_FUNCTIONS = ("T1", "T2", "T1-T2")
+TEMP_OVERLOAD_TEXT = "----"
+
 # 7-segment decoder: character -> lit segments (a..g).
 SEGMENTS: Dict[str, List[str]] = {
     "0": ["a", "b", "c", "d", "e", "f"],
@@ -151,10 +158,20 @@ def build_render_state(
     display_digits = reading.display_digit_count or 5
     if reading.is_overload:
         state["mode"] = "overload"
-        # The real meter lights "O" on digit 1 and "L" on digit 2.
-        state["value_digits"] = _fixed_text_cells(
-            "OL", display_digits, start_index=1, dp_indexes=()
-        )
+        # Most functions overload as "OL" (the real meter lights "O" on digit 1
+        # and "L" on digit 2); a temperature overload shows "----" on the
+        # meter's LCD (4 dashes, left-aligned) — a display accommodation, not
+        # protocol behavior (the SDK reports plain "OL").
+        text = (TEMP_OVERLOAD_TEXT
+                if reading.function_name in TEMP_OVERLOAD_FUNCTIONS else "OL")
+        if text == "OL":
+            state["value_digits"] = _fixed_text_cells(
+                "OL", display_digits, start_index=1, dp_indexes=()
+            )
+        else:
+            state["value_digits"] = _cells_from_text(
+                text, display_digits, align="left"
+            )
     elif reading.is_ascii:
         state["mode"] = "ascii"
         text = reading.ascii_text or "---"

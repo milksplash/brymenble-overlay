@@ -53,6 +53,17 @@ def test_overload_reading(make_info, make_reading):
     assert [d["char"] for d in state["value_digits"]] == [None, "O", "L", None, None]
 
 
+def test_temperature_overload_shows_dashes(make_info, make_reading):
+    # Display accommodation (NOT protocol behavior): the meter's LCD shows
+    # "----" (4 dashes) for a temperature overload even though the SDK reports
+    # plain "OL" (the protocol only sends the OL flag — see captures cap-010).
+    state = build_render_state(
+        make_info(), make_reading(function_name="T1", is_overload=True)
+    )
+    assert state["mode"] == "overload"
+    assert [d["char"] for d in state["value_digits"]] == ["-", "-", "-", "-", None]
+
+
 def test_ascii_text_left_aligned(make_info, make_reading):
     # Text states like "Auto" start at digit 0.
     state = build_render_state(
