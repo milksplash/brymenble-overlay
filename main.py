@@ -9,20 +9,11 @@ first BM78xBT meter found by scanning is used.
 """
 import argparse
 import asyncio
-from typing import Optional
 
-from brymen import DEFAULT_PASSWORD, BrymenClient, find_first_meter
+from brymen import DEFAULT_PASSWORD, BrymenClient, console, find_first_meter
 
 from overlay.server import StateHolder, display_host, lan_ip, run_server
 from overlay.state import build_render_state
-
-
-def _on_reconnect(
-    attempt: int, max_retries: Optional[int], error: Exception
-) -> None:
-    """Progress callback for BrymenClient.ensure_connected(retries=None)."""
-    where = f" (of {max_retries})" if max_retries else ""
-    print(f"Reconnect attempt {attempt}{where} failed: {error}. Retrying...")
 
 
 async def stream_loop(
@@ -32,25 +23,34 @@ async def stream_loop(
     """Stream frames into the render state; reconnects are handled by the SDK.
 
     ``BrymenClient.read_stream()`` owns the pause-vs-power-off decision: a
-    data gap with the BLE link up is a function-switch pause (the last
-    reading stays on screen — no reconnect); a link drop is confirmed with
-    ``link_down_grace``, then reconnected forever (``retries=None``) so a
-    power-off never kills the overlay server.
+    data gap with the BLE link up is a function-switch pause — the display
+    blanks (the meter's LCD does too), it does NOT keep the last reading on
+    screen; a link drop is confirmed with ``link_down_grace``, then
+    reconnected forever (``retries=None``) so a power-off never kills the
+    overlay server.
     """
     def _on_lost(reason: str) -> None:
-        print("No data for a while — meter may be off. Reconnecting...")
+        console.lost(reason)
         holder.set({"connected": False, "mode": "offline"})
 
     def _on_reconnected() -> None:
-        print("Reconnected and subscribed.")
+        console.reconnected()
         holder.set({"connected": True, "mode": "idle"})
+
+    def _on_pause() -> None:
+        # The meter blanks its LCD during a function/range switch; mirror that.
+        # Keeping the last reading (or re-sending a gap line) is strictly a
+        # TestController-bridge keep-alive behaviour — the overlay stays blank.
+        console.paused(no_data_timeout)
+        holder.set(build_render_state(None, None))
 
     async for frame in client.read_stream(
         no_data_timeout=no_data_timeout,
         link_down_grace=link_down_grace,
         retries=None,
         retry_interval=reconnect_interval,
-        on_retry=_on_reconnect,
+        on_retry=console.retry,
+        on_pause=_on_pause,
         on_lost=_on_lost,
         on_reconnected=_on_reconnected,
     ):
@@ -65,11 +65,11 @@ async def resolve_mac(mac: str) -> str:
     meter = await find_first_meter(
         timeout=5,
         retry_interval=10,
-        on_retry=lambda attempt: print("No BM78xBT meters found — retrying in 10s..."),
+        on_retry=console.scanning_retry,
     )
     # retry_interval > 0 -> find_first_meter loops until a meter appears.
     assert meter is not None
-    print(f"Found {meter.address} ({meter.name or 'unknown'}).")
+    console.using(meter.address, meter.name or "unknown")
     return meter.address
 
 
@@ -80,11 +80,11 @@ async def run(args) -> None:
     if args.host in ("0.0.0.0", "::", ""):
         print("  LAN: "
               f"http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
-    print(f"Connecting to {mac}...")
+    console.status(f"connecting to {mac}...")
     client = BrymenClient(mac, args.password, connect_timeout=5.0)
     try:
-        await client.ensure_connected(retries=3, retry_interval=5.0)
-        print("Connected. Add a Browser Source in OBS pointing at the URL above.")
+        await client.ensure_connected(retries=3, retry_interval=5.0, on_retry=console.retry)
+        console.status("connected — add a Browser Source in OBS pointing at the URL above")
         await stream_loop(
             client, holder, args.no_data_timeout, args.reconnect_interval
         )

@@ -13,7 +13,7 @@
    known reading.
 3. Compare **three** things at once:
    - the **meter's physical display**,
-   - the **parsed data** (browser → `/state.json`, or `examples/console.py`
+   - the **parsed data** (browser → `/state.json`, or `examples/live.py`
      which prints `Value / Function / Status`),
    - the **overlay render** (digits, dp, leading zeros, unit/prefix elements,
      function icons).
@@ -104,8 +104,9 @@ Legend: ✅ = verified correct · ❌ = mismatch (fix + report) · ? = unknown/u
   highest resistance range.
 - **Function change blanks the reading** — the real display clears during a
   function switch; the SDK has no "blanked" signal (only a data gap), so the
-  overlay will hold the previous value / show a pause instead of blanking.
-  Expected, not a bug.
+  overlay blanks on the gap via `read_stream()`'s `on_pause` callback,
+  mirroring the meter (it does NOT hold the previous value — holding / gap
+  lines is strictly a TC-bridge keep-alive behaviour).
 - **Auto-range decimal shift** — on an aggressive change (most visible in
   Resistance) the real meter steps ranges and moves the decimal; the overlay
   shows each settled frame with its own dp/prefix and does not animate the

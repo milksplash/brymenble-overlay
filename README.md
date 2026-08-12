@@ -1,5 +1,9 @@
 # BM78xBT Display Overlay
 
+> **⚠️ Unofficial.** This is an independent, community-developed project. It is
+> **not affiliated with, endorsed by, or sponsored by** Brymen Technology Corporation. "Brymen" and the device model names are trademarks of their
+> respective owners.
+
 Emulates the BM78xBT multimeter LCD as a transparent overlay for OBS (or any
 browser), driven live by the `brymenble` SDK over BLE.
 
@@ -26,7 +30,10 @@ python main.py [MAC] [--password 0000] [--port 8765]
 ```
 
 Without a MAC, the first BM78xBT meter found by scanning is used. The server
-reconnects automatically if the meter powers off, and never crashes.
+reconnects automatically if the meter powers off, and never crashes. During a
+function/range switch the meter blanks its display and the overlay mirrors it
+— the last reading is **not** kept on screen (that keep-alive behaviour is
+strictly for the TestController bridge).
 
 Demo mode (no meter needed): `python demo.py [--port 8765]`.
 
@@ -42,8 +49,7 @@ The demo prints a numbered menu of **every meter function the SDK decodes**
 - `c` — toggle auto-cycle through everything
 - `q` — quit
 
-It starts on DCV showing the dummy reading **607.80 V** (the highest
-reasonable value for a 5-digit display). Start elsewhere with
+It starts on DCV showing the dummy reading 607.80 V. Start elsewhere with
 `--function <name>` (e.g. `--function T1`), auto-cycle with `--cycle`, and
 inspect decimal-point placement with `--dp`. Interactive keys need a local
 Windows console; on other platforms the demo auto-cycles.
