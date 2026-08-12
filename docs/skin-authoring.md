@@ -16,7 +16,7 @@ There are **two ways** to build a skin:
 
 ## 1. Declarative LCD skin (no JS needed)
 
-For classic 7-segment meter displays, set `"renderer": "lcd"` (or simply omit
+For LCD-style 7-segment meter displays, set `"renderer": "lcd"` (or simply omit
 `skin.js`) — the host's built-in renderer drives digits, sign, units, prefixes,
 icons, battery and function icons purely from `skin.json`:
 

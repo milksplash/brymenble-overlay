@@ -73,8 +73,9 @@ validation via `tools/check_skin.py` (also run in CI).
    `Overlay server running at http://127.0.0.1:8765/`
 2. In OBS add a **Browser Source**.
 3. URL: `http://127.0.0.1:8765/?skin=default`
-4. Set the source size to match the skin (default skin is 560×250) and scale
-   in OBS as needed.
+4. Set the source size to match the skin (default skin is a 128×72, 16:9
+   viewBox — e.g. 512×288 — the classic skin is 560×250) and scale in OBS
+   as needed.
 
 Transparency is automatic — the page background is transparent.
 

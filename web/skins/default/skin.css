@@ -1,9 +1,12 @@
 body { background: transparent; margin: 0; }
 #meter { background: transparent; }
-.glass   { fill: #07130e; }
-/* The reading is rendered as monospace text (value_text), so the 7-segment
-   bars that used to draw it are hidden. */
-.seg     { display: none; }
-.val     { fill: #23d68c; font-family: Consolas, monospace; }
-.lbl     { fill: #39b87f; font-family: Consolas, monospace; }
-.unitlbl { fill: #23d68c; font-family: Arial, sans-serif; }
+/* default skin: a black panel with reading + function text fields plus the
+   status-annunciator icons. Colors/fonts are authored in meter.svg; the rules
+   below override the SVG presentation attributes so the skin can be rethemed
+   from CSS only. */
+.reading,
+.function {
+  font-family: Consolas, monospace;
+}
+.reading  { fill: #ffc000; }
+.function { fill: #ffc000; }

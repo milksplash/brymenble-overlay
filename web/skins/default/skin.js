@@ -1,19 +1,35 @@
 /* Default skin render module.
  *
- * Self-made stylized BM78xBT display (distributed with the repo). The reading
- * is rendered as monospace text (value_text) instead of 7-segment bars; the
- * function name and RTC are written as text elements.
+ * New base design (meter.svg): a black panel with
+ *   text_reading  — the large reading (right-aligned to the right margin)
+ *   text_function — the function label (authored right-anchored)
+ * plus the small status-annunciator text icons (Hold/Rel/Auto/A-Hold/Crest/
+ * Rec/Max/Min/Avg/Bat) routed from state.icons / state.battery_low via
+ * skin.json "icons" / "battery_low". No 7-seg bars, unit/prefix glyphs or
+ * RTC elements yet; the SVG is still being iterated on.
  *
- * Register: window.__bm_skins.default = { render(state, ctx) { ... } }.
+ * Register: window.__bm_skins['default'] = { render(state, ctx) {...} }.
  */
 window.__bm_skins = window.__bm_skins || {};
-window.__bm_skins.default = (function () {
-  // Right edge of the digit area for the monospace reading text (from meter.svg).
-  const RIGHT_X = 317;
+window.__bm_skins['default'] = (function () {
+  const READING_ID = 'text_reading';
+  const FUNCTION_ID = 'text_function';
+  // Right edge of the reading, in meter.svg group coordinates — set to the
+  // same x as text_function so the reading shares its right margin.
+  const RIGHT_X = 168.02924;
+
+  // Functions whose range unit (with prefix) is shown in the function text —
+  // e.g. Resistance reads "MΩ"/"kΩ", Capacitance "µF", Hz of Line Signal "Hz".
+  const FUNCTIONS_WITH_PREFIX = new Set(['Resistance', 'Capacitance', 'Hz of Line Signal']);
+  // Logic-Hz is special: the function text is the function label + prefixed
+  // unit, e.g. "Logic kHz".
+  const LOGIC_HZ = 'Logic-Hz';
+  // Temperature functions show their unit (°C/°F) behind the function label —
+  // e.g. "T1 °C", "T2 °F", "T1-T2 °C".
+  const TEMP_FUNCTIONS = new Set(['T1', 'T2', 'T1-T2']);
 
   // Build the display string from the semantic cells: blanks for empty cells
-  // and '.' after the cell that carries the decimal point. Sign is applied by
-  // the caller so leading-zero stripping can work on the value alone.
+  // and '.' after the cell that carries the decimal point.
   function valueText(state) {
     const cells = state.value_digits || [];
     let s = '';
@@ -35,78 +51,75 @@ window.__bm_skins.default = (function () {
     return out;
   }
 
-  // "Light all" self-test (state.mode == "all"): the reading shows "88888"
-  // and every unit, prefix, icon and annunciator turns on at once.
-  function lightAllDefault(ctx) {
-    const skin = ctx.skin;
-    const vt = ctx.byId('value_text');
-    if (vt) {
-      vt.textContent = '88888';
-      vt.setAttribute('text-anchor', 'end');
-      vt.setAttribute('x', RIGHT_X);
+  // Range unit label with its prefix, from skin.json "unit_labels"
+  // (key "<prefix>|<unit>", e.g. "M|Ω" -> "MΩ"; falls back to the bare unit).
+  function unitLabel(state, skin) {
+    const labels = skin.unit_labels || {};
+    const key = `${state.prefix || ''}|${state.unit || ''}`;
+    return key in labels ? labels[key] : (state.unit || '');
+  }
+
+  // "Light all" self-test (state.mode == "all"): every text field the skin
+  // owns shows a representative content.
+  function lightAll(ctx) {
+    const r = ctx.byId(READING_ID);
+    if (r) {
+      r.textContent = '88888';
+      r.setAttribute('text-anchor', 'end');
+      r.setAttribute('x', RIGHT_X);
     }
-    ctx.lightAllUnits();
-    ctx.lightAllPrefixes();
     ctx.lightAllIcons();
-    if (skin.battery_low) ctx.show(skin.battery_low, true);
-    if (skin.sign) ctx.show(skin.sign, true);
-    const fn = skin.function;
+    if (ctx.skin.battery_low) ctx.show(ctx.skin.battery_low, true);
+    const fn = ctx.skin.function;
     if (fn && fn.type === 'text' && fn.id) {
       const f = ctx.byId(fn.id);
       if (f) f.textContent = 'ALL';
-    }
-    if (skin.rtc_label) {
-      const r = ctx.byId(skin.rtc_label);
-      if (r) r.textContent = '2026-08-06 12:34:56.789';
     }
   }
 
   return {
     name: 'default',
     render(state, ctx) {
-      // Self-test: light every element the skin owns.
       if (state.mode === 'all') {
-        lightAllDefault(ctx);
+        lightAll(ctx);
         return;
       }
 
-      const el = ctx.byId('value_text');
-      if (el) {
+      // Reading — right-aligned to the same right edge as text_function.
+      const r = ctx.byId(READING_ID);
+      if (r) {
         let text = valueText(state);
-        // The default skin does not zero-pad numeric readings (the official
-        // meter does); drop leading zeros like "00.250" -> "0.250".
         if (state.mode === 'numeric') text = stripLeadingZeros(text);
         if (state.sign) text = '-' + text;
-        el.textContent = text;
-        // The default skin right-aligns the reading (the official meter
-        // left-aligns some ASCII states; that is an official-skin decision).
-        el.setAttribute('text-anchor', 'end');
-        el.setAttribute('x', RIGHT_X);
+        r.textContent = text;
+        r.setAttribute('text-anchor', 'end');
+        r.setAttribute('x', RIGHT_X);
       }
 
-      ctx.lightUnits(state.unit);
-      ctx.lightPrefixes(state.unit, state.prefix);
-      ctx.lightIcons(state.icons);
-      ctx.lightBattery(state.battery_low);
-
-      // Function name as text (skin.json: { type: "text", id: "fn_text" }).
-      // skin.json "function_labels" overrides the SDK's canonical function
-      // names for display; anything not listed falls back to the canonical
-      // name (so the SDK's protocol-faithful names stay untouched).
+      // Function label as text. Resistance/Capacitance/Hz of Line Signal also
+      // show the range unit, so the prefix is included ("MΩ", "µF", "Hz").
+      // Logic-Hz and the temperature functions (T1/T2/T1-T2) append the unit
+      // behind the label ("Logic kHz", "T1 °C", "T1-T2 °F").
       const fn = ctx.skin.function;
       if (fn && fn.type === 'text' && fn.id) {
         const f = ctx.byId(fn.id);
         if (f) {
           const labels = ctx.skin.function_labels || {};
-          f.textContent = labels[state.function] || state.function || '';
+          let text = labels[state.function] || state.function || '';
+          if (FUNCTIONS_WITH_PREFIX.has(state.function)) {
+            text = unitLabel(state, ctx.skin) || text;
+          } else if (state.function === LOGIC_HZ || TEMP_FUNCTIONS.has(state.function)) {
+            text = `${text} ${unitLabel(state, ctx.skin)}`.trim();
+          }
+          f.textContent = text;
         }
       }
 
-      // RTC timestamp as text (skin.json: "rtc_label": "rtc_text").
-      if (ctx.skin.rtc_label) {
-        const r = ctx.byId(ctx.skin.rtc_label);
-        if (r) r.textContent = state.rtc || '';
-      }
+      // Status annunciators (Hold/Rel/Auto/A-Hold/Crest/Rec/Max/Min/Avg) and
+      // the low-battery indicator — routed from state via skin.json "icons"
+      // and "battery_low" (overlay.js ctx.lightIcons / ctx.lightBattery).
+      ctx.lightIcons(state.icons);
+      ctx.lightBattery(state.battery_low);
     },
   };
 })();
