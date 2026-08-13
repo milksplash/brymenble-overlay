@@ -17,7 +17,7 @@ from overlay.state import build_render_state
 
 
 async def stream_loop(
-    client: BrymenClient, holder: StateHolder, no_data_timeout: float,
+    client: BrymenClient, holder: StateHolder,
     reconnect_interval: float, link_down_grace: float = 2.0,
 ) -> None:
     """Stream frames into the render state; reconnects are handled by the SDK.
@@ -41,11 +41,9 @@ async def stream_loop(
         # The meter blanks its LCD during a function/range switch; mirror that.
         # Keeping the last reading (or re-sending a gap line) is strictly a
         # TestController-bridge keep-alive behaviour — the overlay stays blank.
-        console.paused(no_data_timeout)
         holder.set(build_render_state(None, None))
 
     async for frame in client.read_stream(
-        no_data_timeout=no_data_timeout,
         link_down_grace=link_down_grace,
         retries=None,
         retry_interval=reconnect_interval,
@@ -76,17 +74,16 @@ async def resolve_mac(mac: str) -> str:
 async def run(args) -> None:
     mac = await resolve_mac(args.mac)
     server, holder = run_server(args.host, args.port)
-    print(f"Overlay server running at http://{display_host(args.host)}:{args.port}/")
+    console.status(f"overlay server running at http://{display_host(args.host)}:{args.port}/")
     if args.host in ("0.0.0.0", "::", ""):
-        print("  LAN: "
-              f"http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
-    console.status(f"connecting to {mac}...")
+        console.status(f"LAN: http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
+    console.connecting(mac)
     client = BrymenClient(mac, args.password, connect_timeout=5.0)
     try:
         await client.ensure_connected(retries=3, retry_interval=5.0, on_retry=console.retry)
-        console.status("connected — add a Browser Source in OBS pointing at the URL above")
+        console.connected(mac, detail="add a Browser Source in OBS pointing at the URL above")
         await stream_loop(
-            client, holder, args.no_data_timeout, args.reconnect_interval
+            client, holder, args.reconnect_interval
         )
     finally:
         await client.close()
@@ -109,10 +106,6 @@ def main() -> None:
     )
     parser.add_argument(
         "--port", type=int, default=8765, help="HTTP port (default 8765)",
-    )
-    parser.add_argument(
-        "--no-data-timeout", type=float, default=3.0,
-        help="seconds of silence before reconnect (default 3.0)",
     )
     parser.add_argument(
         "--reconnect-interval", type=float, default=10.0,
