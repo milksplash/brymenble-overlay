@@ -206,3 +206,19 @@ def build_render_state(
         # SDK's canonical clock string (single source of truth).
         state["rtc"] = reading.rtc.isoformat() if reading.rtc else None
     return state
+
+
+def blank_reading(state: Dict[str, Any]) -> Dict[str, Any]:
+    """Blank only the reading, keeping every other UI element lit.
+
+    The meter clears its LCD read during a function/range switch but keeps the
+    function label, unit, prefix, icons, battery and RTC lit. This mirrors
+    that: it returns a copy of ``state`` with the reading digits and sign
+    cleared (and ``mode`` set to "idle" so skins don't re-derive a value from
+    the empty cells), leaving everything else intact.
+    """
+    blanked = dict(state)
+    blanked["mode"] = "idle"
+    blanked["value_digits"] = []
+    blanked["sign"] = False
+    return blanked

@@ -13,7 +13,7 @@ import asyncio
 from brymenble import DEFAULT_PASSWORD, BrymenbleClient, console, find_first_meter
 
 from overlay.server import StateHolder, display_host, lan_ip, run_server
-from overlay.state import build_render_state
+from overlay.state import blank_reading, build_render_state
 
 
 async def stream_loop(
@@ -38,10 +38,12 @@ async def stream_loop(
         holder.set({"connected": True, "mode": "idle"})
 
     def _on_pause() -> None:
-        # The meter blanks its LCD during a function/range switch; mirror that.
-        # Keeping the last reading (or re-sending a gap line) is strictly a
-        # TestController-bridge keep-alive behaviour — the overlay stays blank.
-        holder.set(build_render_state(None, None))
+        # The meter blanks its LCD reading during a function/range switch but
+        # keeps the function label, unit, prefix, icons, battery and RTC lit.
+        # Mirror that: blank only the reading, let everything else linger.
+        # (Keeping the last reading / re-sending a gap line is strictly a
+        # TestController-bridge keep-alive behaviour — the overlay blanks.)
+        holder.set(blank_reading(holder.get()))
 
     async for frame in client.read_stream(
         link_down_grace=link_down_grace,

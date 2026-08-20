@@ -6,7 +6,7 @@ The render state is the skin-agnostic JSON the browser polls at
 from brymenble import constants
 from brymenble.parsers import RtcTime
 
-from overlay.state import SEGMENTS, build_render_state
+from overlay.state import SEGMENTS, blank_reading, build_render_state
 
 
 def test_reading_none_yields_idle_state(make_info):
@@ -112,3 +112,39 @@ def test_rtc_string_formatting(make_info, make_reading):
     rtc = RtcTime(2026, 8, 11, 12, 34, 56, 789)
     state = build_render_state(make_info(), make_reading(rtc=rtc))
     assert state["rtc"] == "2026-08-11 12:34:56.789"
+
+
+def test_blank_reading_keeps_other_ui(make_info, make_reading):
+    # A function/range switch blanks only the reading; the function label,
+    # unit, prefix, icons, battery and RTC all linger (mirroring the meter).
+    state = build_render_state(
+        make_info(battery_status=constants.BATTERY_LOW),
+        make_reading(
+            function_name="DCV", unit="V", prefix="m", is_negative=True,
+            is_crest=True, is_relative=True, is_held=True, is_auto_range=True,
+            is_auto_hold=True, is_recording=True, is_max=True, is_min=True,
+            is_avg=True, rtc=RtcTime(2026, 8, 11, 12, 34, 56, 789),
+        ),
+    )
+    blanked = blank_reading(state)
+
+    # The reading is gone.
+    assert blanked["mode"] == "idle"
+    assert blanked["value_digits"] == []
+    assert blanked["sign"] is False
+
+    # Everything else lingers.
+    assert blanked["connected"] is True
+    assert blanked["unit"] == "V"
+    assert blanked["prefix"] == "m"
+    assert blanked["function"] == "DCV"
+    assert blanked["icons"] == {
+        "hold": True, "relative": True, "auto": True, "auto_hold": True,
+        "crest": True, "record": True, "max": True, "min": True, "avg": True,
+    }
+    assert blanked["battery_low"] is True
+    assert blanked["rtc"] == "2026-08-11 12:34:56.789"
+
+    # The original state is untouched (blank_reading returns a copy).
+    assert state["value_digits"] != []
+    assert state["sign"] is True
