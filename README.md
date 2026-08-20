@@ -22,13 +22,6 @@ The `brymenble` install also pulls in its `bleak` dependency.
 .venv\Scripts\python main.py [MAC] [--password 0000] [--port 8765]
 ```
 
-Or activate the venv first, then use plain `python`:
-
-```powershell
-.venv\Scripts\Activate.ps1
-python main.py [MAC] [--password 0000] [--port 8765]
-```
-
 ## Tests
 
 Offline unit tests:
