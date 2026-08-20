@@ -10,3 +10,6 @@ web/skins/official/
 # Local reference material — never commit or publish
 *.pptx
 *.pdf
+
+# Local-only real-meter verification checklist — never commit
+docs/meter-verification.md

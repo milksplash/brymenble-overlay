@@ -1,12 +1,17 @@
-# Default Skin — Element IDs Reference
+# Classic Skin — Element IDs Reference
 
-Source: `web/skins/default/meter.svg` (default skin element ids)
+Source: `web/skins/classic/meter.svg` (classic skin element ids)
 
 Use this list when naming groups/paths in the **official** skin. Each element
 id maps to the semantic keys in `skin.json` (`digit_prefix`, `unit`, `prefix`,
 `icons`, etc.). If the official skin uses different ids, update its own
 `skin.json` to match — the code only cares that `skin.json` ids exist in the
 skin's `meter.svg`.
+
+> **Note:** the `default` skin is a text-based design (`text_reading` /
+> `text_function` + annunciator text icons) with no 7-segment digits, unit/
+> prefix glyphs, or RTC element. The `classic` skin is the 7-segment LCD
+> layout this catalog describes.
 
 ## Digits (5 cells × 7 segments + dp = 40 ids)
 
@@ -44,9 +49,9 @@ Segment layout:
 
 `prefix_n`, `prefix_mu` (µ), `prefix_m`, `prefix_k`, `prefix_M`, `prefix_G`
 
-## Units (7)
+## Units (8)
 
-`unit_v`, `unit_a`, `unit_ohm` (Ω), `unit_hz`, `unit_pct` (%), `unit_degc` (°C), `unit_degf` (°F)
+`unit_v`, `unit_a`, `unit_ohm` (Ω), `unit_siemen` (S), `unit_hz`, `unit_pct` (%), `unit_degc` (°C), `unit_degf` (°F)
 
 ## Icons / annunciators (10)
 
