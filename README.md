@@ -29,34 +29,9 @@ Or activate the venv first, then use plain `python`:
 python main.py [MAC] [--password 0000] [--port 8765]
 ```
 
-Without a MAC, the first BM78xBT meter found by scanning is used. The server
-reconnects automatically if the meter powers off, and never crashes. During a
-function/range switch the meter blanks its display and the overlay mirrors it
-— the last reading is **not** kept on screen (that keep-alive behaviour is
-strictly for the TestController bridge).
-
-Demo mode (no meter needed): `python demo.py [--port 8765]`.
-
-Like `main.py`, the demo binds to all interfaces (`--host 0.0.0.0`, the
-default) so OBS or a browser on any machine on the LAN can open it — use
-`--host 127.0.0.1` to restrict it to this machine.
-
-The demo prints a numbered menu of **every meter function the SDK decodes**
-(plus special/flag states) and lets you interactively switch function mode:
-
-- `n` / `→` — next item, `p` / `←` — previous item
-- `<number>` + `Enter` — jump straight to that menu item
-- `c` — toggle auto-cycle through everything
-- `q` — quit
-
-It starts on DCV showing the dummy reading 607.80 V. Start elsewhere with
-`--function <name>` (e.g. `--function T1`), auto-cycle with `--cycle`, and
-inspect decimal-point placement with `--dp`. Interactive keys need a local
-Windows console; on other platforms the demo auto-cycles.
-
 ## Tests
 
-Offline unit tests (no meter or OBS needed):
+Offline unit tests:
 
 ```bash
 .venv\Scripts\python -m pip install -r requirements-dev.txt
@@ -66,18 +41,6 @@ Offline unit tests (no meter or OBS needed):
 These cover the render-state builder (`overlay/state.py`), the HTTP server
 (`overlay/server.py`, including the path-traversal guard), and skin
 validation via `tools/check_skin.py` (also run in CI).
-
-## OBS setup
-
-1. Run `python main.py`. You'll see:
-   `Overlay server running at http://127.0.0.1:8765/`
-2. In OBS add a **Browser Source**.
-3. URL: `http://127.0.0.1:8765/?skin=default`
-4. Set the source size to match the skin (default skin is a 128×72, 16:9
-   viewBox — e.g. 512×288 — the classic skin is 560×250) and scale in OBS
-   as needed.
-
-Transparency is automatic — the page background is transparent.
 
 ## Skins
 
@@ -137,10 +100,6 @@ window.__bm_skins.default = {
   canonical function names (used with `function.type: "text"`), e.g.
   `{ "Duty Cycle (%)": "DUTY", "nS Conductance": "nS" }`. Functions not
   listed fall back to the canonical name, so the SDK stays protocol-faithful.
-
-- `skins/default/` — self-made, distributed with this repo.
-- `skins/official/` — built from the official meter graphics; **gitignored,
-  never published** (kept private per licensing considerations).
 
 Select a skin with `?skin=NAME` in the Browser Source URL.
 
