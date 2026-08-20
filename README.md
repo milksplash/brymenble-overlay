@@ -4,7 +4,9 @@
 > **not affiliated with, endorsed by, or sponsored by** Brymen Technology Corporation. "Brymen" and the device model names are trademarks of their
 > respective owners.
 
-Emulates the BM78xBT multimeter LCD as a transparent overlay for OBS (or any
+![](img/showcase.jpg)
+
+Emulates the BM78xBT multimeter LCD as a overlay for OBS (or any
 browser), driven live by the `brymenble` SDK over BLE.
 
 ## Setup
@@ -18,8 +20,17 @@ The `brymenble` install also pulls in its `bleak` dependency.
 
 ## Run
 
+Explicit — MAC, custom password and port:
+
 ```bash
-.venv\Scripts\python main.py [MAC] [--password 0000] [--port 8765]
+.venv\Scripts\python main.py 12:34:56:78:9A:BC --password 4321 --port 8765
+```
+
+Without a MAC, the first BM78xBT found by scanning is used (defaults:
+password `0000`, port `8765`):
+
+```bash
+.venv\Scripts\python main.py
 ```
 
 ## Tests
@@ -98,5 +109,7 @@ Select a skin with `?skin=NAME` in the Browser Source URL.
 
 ## License
 
-MIT. The `default/` skin is original work; the `official/` skin is private
-and not distributed with this repo.
+MIT — see [LICENSE](LICENSE).
+
+"Brymen" and the device model names are trademarks of their respective owners;
+this project is not affiliated with or endorsed by Brymen Technology Corporation.
