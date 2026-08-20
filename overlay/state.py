@@ -5,8 +5,8 @@ maps this semantic state to its own SVG element ids via skin.json.
 """
 from typing import Any, Dict, List, Optional
 
-from brymen import constants
-from brymen.parsers import InfoPacket, ReadingPacket
+from brymenble import constants
+from brymenble.parsers import InfoPacket, ReadingPacket
 
 # Display accommodation (NOT protocol behavior): the meter's LCD shows "----"
 # (4 dashes) for a temperature overload, even though the protocol only sends

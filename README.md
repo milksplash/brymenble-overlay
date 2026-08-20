@@ -11,10 +11,10 @@ browser), driven live by the `brymenble` SDK over BLE.
 
 ```bash
 python -m venv .venv
-.venv\Scripts\python -m pip install -e ../brymenble
+.venv\Scripts\python -m pip install -i https://test.pypi.org/simple/ brymenble
 ```
 
-The `brymenble` editable install also pulls in its `bleak` dependency.
+The `brymenble` install also pulls in its `bleak` dependency.
 
 ## Run
 

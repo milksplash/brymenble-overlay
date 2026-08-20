@@ -10,19 +10,19 @@ first BM78xBT meter found by scanning is used.
 import argparse
 import asyncio
 
-from brymen import DEFAULT_PASSWORD, BrymenClient, console, find_first_meter
+from brymenble import DEFAULT_PASSWORD, BrymenbleClient, console, find_first_meter
 
 from overlay.server import StateHolder, display_host, lan_ip, run_server
 from overlay.state import build_render_state
 
 
 async def stream_loop(
-    client: BrymenClient, holder: StateHolder,
+    client: BrymenbleClient, holder: StateHolder,
     reconnect_interval: float, link_down_grace: float = 2.0,
 ) -> None:
     """Stream frames into the render state; reconnects are handled by the SDK.
 
-    ``BrymenClient.read_stream()`` owns the pause-vs-power-off decision: a
+    ``BrymenbleClient.read_stream()`` owns the pause-vs-power-off decision: a
     data gap with the BLE link up is a function-switch pause — the display
     blanks (the meter's LCD does too), it does NOT keep the last reading on
     screen; a link drop is confirmed with ``link_down_grace``, then
@@ -78,7 +78,7 @@ async def run(args) -> None:
     if args.host in ("0.0.0.0", "::", ""):
         console.status(f"LAN: http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
     console.connecting(mac)
-    client = BrymenClient(mac, args.password, connect_timeout=5.0)
+    client = BrymenbleClient(mac, args.password, connect_timeout=5.0)
     try:
         await client.ensure_connected(retries=3, retry_interval=5.0, on_retry=console.retry)
         console.connected(mac, detail="add a Browser Source in OBS pointing at the URL above")

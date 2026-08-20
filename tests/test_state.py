@@ -3,8 +3,8 @@
 The render state is the skin-agnostic JSON the browser polls at
 ``/state.json``, so these are the correctness-critical pure functions.
 """
-from brymen import constants
-from brymen.parsers import RtcTime
+from brymenble import constants
+from brymenble.parsers import RtcTime
 
 from overlay.state import SEGMENTS, build_render_state
 

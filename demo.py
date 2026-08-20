@@ -8,7 +8,7 @@ browser on any machine on the LAN can open it. Pass --host 127.0.0.1 to
 restrict it to this machine.
 
 The menu at startup lists EVERY meter function the SDK decodes
-(brymen.constants.FUNCTION_NAMES) plus a few special/flag demos, each with
+(brymenble.constants.FUNCTION_NAMES) plus a few special/flag demos, each with
 the value the SDK would decode — so you can verify every function and status
 flag renders correctly before hooking up a real meter.
 
@@ -30,9 +30,9 @@ import asyncio
 import threading
 from typing import Any, Dict, List, Optional, Tuple
 
-from brymen import constants
-from brymen.formatter import format_reading
-from brymen.parsers import InfoPacket, ReadingPacket
+from brymenble import constants
+from brymenble.formatter import format_reading
+from brymenble.parsers import InfoPacket, ReadingPacket
 
 from overlay.server import display_host, lan_ip, run_server
 from overlay.state import build_render_state

@@ -37,7 +37,7 @@ SEGS = ["a", "b", "c", "d", "e", "f", "g", "dp"]
 
 # Optional: SDK canonical function names, for function.map validation.
 try:  # the overlay venv has brymenble installed editable
-    from brymen.constants import FUNCTION_NAMES as _SDK_FN
+    from brymenble.constants import FUNCTION_NAMES as _SDK_FN
 
     SDK_FUNCTIONS = set(_SDK_FN.values())
 except Exception:  # SDK not importable — name checks are skipped
