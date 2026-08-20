@@ -1,4 +1,4 @@
-# BM78xBT Display Overlay
+# brymenble-overlay Web Overlay
 
 > **⚠️ Unofficial.** This is an independent, community-developed project. It is
 > **not affiliated with, endorsed by, or sponsored by** Brymen Technology Corporation. "Brymen" and the device model names are trademarks of their
@@ -13,10 +13,11 @@ browser), driven live by the `brymenble` SDK over BLE.
 
 ```bash
 python -m venv .venv
-.venv\Scripts\python -m pip install -i https://test.pypi.org/simple/ brymenble
+.venv\Scripts\python -m pip install -r requirements.txt
 ```
 
-The `brymenble` install also pulls in its `bleak` dependency.
+`requirements.txt` installs the `brymenble` SDK from PyPI (which pulls in its
+`bleak` dependency).
 
 ## Run
 
