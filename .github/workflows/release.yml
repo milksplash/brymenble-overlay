@@ -26,14 +26,17 @@ jobs:
         run: python -m PyInstaller brymenble-overlay.spec --noconfirm
 
       - name: Smoke-test the EXE launches
+        shell: powershell
         run: |
           # Start the server, give it a moment, then confirm it's serving.
           # (No meter needed — the server binds before connecting.)
-          # Use curl.exe explicitly: in PowerShell, bare `curl` is an alias
-          # for Invoke-WebRequest, which doesn't accept these flags.
-          start /b dist\brymenble-overlay.exe --port 8765
-          timeout /t 5
-          curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8765/state.json
+          # PowerShell-native: Start-Process (not cmd's `start /b`), and
+          # curl.exe explicitly (bare `curl` is an Invoke-WebRequest alias).
+          Start-Process -FilePath "dist\brymenble-overlay.exe" -ArgumentList "--port","8765"
+          Start-Sleep -Seconds 5
+          $code = curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8765/state.json
+          Write-Output "state.json HTTP: $code"
+          if ($code -ne "200") { throw "overlay did not serve /state.json (HTTP $code)" }
 
       - name: Upload EXE to release
         uses: softprops/action-gh-release@v2
