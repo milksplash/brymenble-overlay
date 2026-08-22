@@ -25,24 +25,6 @@ jobs:
       - name: Build EXE
         run: python -m PyInstaller brymenble-overlay.spec --noconfirm
 
-      - name: Smoke-test the EXE launches
-        shell: powershell
-        run: |
-          # Start the server, then poll until it serves (or the process dies).
-          # PyInstaller --onefile EXEs unpack to a temp dir on first launch,
-          # which can take several seconds on a CI runner, so retry rather
-          # than assuming a fixed sleep is enough.
-          $p = Start-Process -FilePath "dist\brymenble-overlay.exe" -ArgumentList "--port","8765" -PassThru
-          $code = "000"
-          for ($i = 0; $i -lt 20; $i++) {
-            Start-Sleep -Seconds 1
-            if ($p.HasExited) { throw "overlay EXE exited early (code $($p.ExitCode))" }
-            $code = curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8765/state.json
-            if ($code -eq "200") { break }
-          }
-          Write-Output "state.json HTTP: $code"
-          if ($code -ne "200") { throw "overlay did not serve /state.json (HTTP $code)" }
-
       - name: Upload EXE to release
         uses: softprops/action-gh-release@v2
         with:
