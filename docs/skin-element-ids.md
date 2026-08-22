@@ -2,9 +2,9 @@
 
 Source: `web/skins/classic/meter.svg` (classic skin element ids)
 
-Use this list when naming groups/paths in the **official** skin. Each element
+Use this list when naming groups/paths in a 7-segment skin. Each element
 id maps to the semantic keys in `skin.json` (`digit_prefix`, `unit`, `prefix`,
-`icons`, etc.). If the official skin uses different ids, update its own
+`icons`, etc.). If a skin uses different ids, update its own
 `skin.json` to match — the code only cares that `skin.json` ids exist in the
 skin's `meter.svg`.
 

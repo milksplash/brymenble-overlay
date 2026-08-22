@@ -1,0 +1,42 @@
+name: build-windows-exe
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build EXE
+        run: python -m PyInstaller brymenble-overlay.spec --noconfirm
+
+      - name: Smoke-test the EXE launches
+        run: |
+          # Start the server, give it a moment, then confirm it's serving.
+          # (No meter needed — the server binds before connecting.)
+          # Use curl.exe explicitly: in PowerShell, bare `curl` is an alias
+          # for Invoke-WebRequest, which doesn't accept these flags.
+          start /b dist\brymenble-overlay.exe --port 8765
+          timeout /t 5
+          curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8765/state.json
+
+      - name: Upload EXE to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/brymenble-overlay.exe
+          fail_on_unmatched_files: true

@@ -6,6 +6,7 @@ frame rate (the meter streams at a few Hz).
 """
 import json
 import socket
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,7 +22,23 @@ MIME_TYPES = {
     ".woff2": "font/woff2",
 }
 
-WEB_ROOT = Path(__file__).resolve().parent.parent / "web"
+
+def _web_root() -> Path:
+    """Locate the static ``web/`` payload.
+
+    Under PyInstaller the bundled data is unpacked to ``sys._MEIPASS``. The
+    spec bundles each web file with its path relative to ``web/`` (e.g.
+    ``index.html``, ``skins/classic/skin.json``), so they land directly in
+    ``_MEIPASS`` — NOT in a ``web/`` subfolder. When frozen, the web root is
+    therefore ``_MEIPASS`` itself; otherwise resolve relative to this source
+    file.
+    """
+    if getattr(sys, "frozen", False):
+        return Path(getattr(sys, "_MEIPASS", Path(__file__).parent))
+    return Path(__file__).resolve().parent.parent / "web"
+
+
+WEB_ROOT = _web_root()
 
 
 class StateHolder:

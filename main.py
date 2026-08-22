@@ -74,15 +74,22 @@ async def resolve_mac(mac: str) -> str:
 
 
 async def run(args) -> None:
-    mac = await resolve_mac(args.mac)
+    # Bind the HTTP server FIRST so the OBS URL is reachable immediately,
+    # even while we wait for the meter (it may be powered off / out of range).
+    # This also lets the CI smoke-test verify the server without a meter.
     server, holder = run_server(args.host, args.port)
     console.status(f"overlay server running at http://{display_host(args.host)}:{args.port}/")
     if args.host in ("0.0.0.0", "::", ""):
         console.status(f"LAN: http://{lan_ip()}:{args.port}/  (use this URL in OBS)")
+
+    mac = await resolve_mac(args.mac)
     console.connecting(mac)
     client = BrymenbleClient(mac, args.password, connect_timeout=5.0)
     try:
-        await client.ensure_connected(retries=3, retry_interval=5.0, on_retry=console.retry)
+        # Retry forever until the meter is in range — a non-technical user may
+        # launch the overlay before powering on the meter, and the server is
+        # already bound so OBS can still load the page meanwhile.
+        await client.ensure_connected(retries=None, retry_interval=5.0, on_retry=console.retry)
         console.connected(mac, detail="add a Browser Source in OBS pointing at the URL above")
         await stream_loop(
             client, holder, args.reconnect_interval

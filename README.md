@@ -9,7 +9,15 @@
 Emulates the BM78xBT multimeter LCD as a overlay for OBS (or any
 browser), driven live by the `brymenble` SDK over BLE.
 
-## Setup
+## Install
+
+### Option A — Windows binary (no Python needed)
+
+Download `brymenble-overlay.exe` from the latest
+[release](https://github.com/milksplash/brymenble-overlay/releases) and
+double-click it. No Python or dependencies are required.
+
+### Option B — from source
 
 ```bash
 python -m venv .venv
@@ -32,6 +40,12 @@ password `0000`, port `8765`):
 
 ```bash
 .venv\Scripts\python main.py
+```
+
+The Windows binary accepts the same arguments:
+
+```bash
+brymenble-overlay.exe 12:34:56:78:9A:BC --password 4321 --port 8765
 ```
 
 ## Tests
@@ -100,7 +114,7 @@ window.__bm_skins.default = {
   - `{ "type": "text", "id": "fn_text" }` — write the function name into a
     text element (used by `default`).
   - `{ "type": "icons", "map": { "DCV": "icon_dc", "DC+ACV": ["icon_dc", "icon_ac"], … } }`
-    — light icon(s) for the active function (used by `official`).
+    — light icon(s) for the active function (used by `classic`).
 - **`function_labels`** (optional) — per-skin display overrides for the SDK's
   canonical function names (used with `function.type: "text"`), e.g.
   `{ "Duty Cycle (%)": "DUTY", "nS Conductance": "nS" }`. Functions not
