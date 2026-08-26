@@ -9,6 +9,10 @@
 Emulates the BM78xBT multimeter LCD as a overlay for OBS (or any
 browser), driven live by the `brymenble` SDK over BLE.
 
+## Platform support
+
+Linux and Windows are supported. macOS randomizes BLE device MAC addresses and behavior is not tested.
+
 ## Install
 
 ### Option A — Windows binary (no Python needed)
@@ -47,6 +51,39 @@ The Windows binary accepts the same arguments:
 ```bash
 brymenble-overlay.exe 12:34:56:78:9A:BC --password 4321 --port 8765
 ```
+
+## Project layout
+
+```
+brymenble-overlay/
+├─ main.py                 # Entry point: CLI, BLE stream loop, render-state update
+├─ overlay/                # Python backend (serves the web overlay)
+│  ├─ __init__.py
+│  ├─ server.py            # HTTP server + StateHolder + path-traversal guard
+│  └─ state.py             # Builds the semantic render state (/state.json)
+├─ web/                    # Static front-end served to OBS / any browser
+│  ├─ index.html           # Overlay page (Browser Source target)
+│  ├─ overlay.js           # Thin host: loads skin.json, meter.svg, skin.js,
+│  │                       #   polls /state.json, calls render(state, ctx)
+│  └─ skins/               # One folder per skin (skin.json, skin.js, meter.svg, skin.css)
+├─ tools/                  # Dev / build helpers
+│  ├─ build_exe.py         # PyInstaller single-file .exe packaging
+│  └─ check_skin.py        # Skin validation (also run in CI)
+├─ tests/                  # Offline unit tests (state builder, server, skins)
+│  ├─ conftest.py
+│  ├─ test_server.py
+│  └─ test_state.py
+├─ docs/                   # In-depth guides & the skin schema
+│  ├─ skin-authoring.md
+│  ├─ skin-element-ids.md
+│  └─ skin.schema.json
+├─ demo.py                 # Offline demo / stand-in meter feed
+├─ main_exe entry points: brymenble-overlay.spec, requirements*.txt, pyproject.toml
+```
+
+Data flows: `main.py` streams BLE frames into `overlay/state.py`, which builds
+a semantic render state served by `overlay/server.py` as `/state.json`; the
+browser loads `web/overlay.js`, which drives the active skin in `web/skins/`.
 
 ## Tests
 
