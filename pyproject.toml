@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "brymenble-overlay"
-version = "0.1.1"
+version = "0.1.2"
 description = "BM78xBT multimeter LCD emulation overlay for OBS, driven live by the brymenble SDK over BLE"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -13,7 +13,7 @@ authors = [
     { name = "Martin Chan" },
 ]
 dependencies = [
-    "brymenble>=0.5.2",
+    "brymenble>=0.5.3",
 ]
 
 [project.optional-dependencies]
