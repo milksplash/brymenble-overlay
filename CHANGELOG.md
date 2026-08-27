@@ -16,9 +16,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   plain `license = "MIT"` string (which requires setuptools >= 77) with the
   portable `license = { text = "MIT" }` table form, so the build works on the
   declared `setuptools >= 61` backend.
+- **BLE connect timeout raised to the SDK default (10s)** — the overlay no
+  longer overrides `connect_timeout` to 5s, reducing transient first-attempt
+  connect timeouts on cold-start BLE connects.
 
 ### Fixed
 
+- **`resolve_mac` now prints "scanning for a BM78xBT meter..."** before
+  scanning, matching the bridge's behavior — the overlay previously skipped
+  this status line.
 - **`server.server_close()` is now called after shutdown** in `main.py` and
   `demo.py`, releasing the listening socket cleanly instead of leaving it
   bound.
