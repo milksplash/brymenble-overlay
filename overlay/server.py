@@ -56,6 +56,18 @@ class StateHolder:
         with self._lock:
             return self._state
 
+    def mutate(self, fn) -> dict:
+        """Atomically read-modify-write the state under one lock acquisition.
+
+        ``fn(current_state)`` is called with the current state and must return
+        the new state. This avoids the read-modify-write race of a separate
+        ``get()`` then ``set()`` (a frame arriving in between would be
+        clobbered). Returns the new state.
+        """
+        with self._lock:
+            self._state = fn(self._state)
+            return self._state
+
 
 class OverlayHTTPServer(ThreadingHTTPServer):
     daemon_threads = True

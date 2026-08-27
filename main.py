@@ -43,7 +43,10 @@ async def stream_loop(
         # Mirror that: blank only the reading, let everything else linger.
         # (Keeping the last reading / re-sending a gap line is strictly a
         # TestController-bridge keep-alive behaviour — the overlay blanks.)
-        holder.set(blank_reading(holder.get()))
+        # mutate() does the read-modify-write under one lock so a frame
+        # arriving between get() and set() isn't clobbered by the stale
+        # blanked state.
+        holder.mutate(blank_reading)
 
     async for frame in client.read_stream(
         link_down_grace=link_down_grace,

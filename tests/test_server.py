@@ -22,6 +22,18 @@ def test_state_holder():
     assert holder.get() == {"connected": True, "mode": "numeric"}
 
 
+def test_state_holder_mutate_atomic():
+    holder = StateHolder()
+    holder.set({"connected": True, "mode": "numeric", "value_digits": [1, 2, 3]})
+    # mutate applies fn under one lock and returns the new state.
+    new_state = holder.mutate(lambda s: {**s, "mode": "idle", "value_digits": []})
+    assert new_state["mode"] == "idle"
+    assert new_state["value_digits"] == []
+    # The mutation is visible to subsequent get().
+    assert holder.get()["mode"] == "idle"
+    assert holder.get()["value_digits"] == []
+
+
 def test_serves_state_json_and_assets():
     httpd, holder = run_server("127.0.0.1", 0)
     port = httpd.server_address[1]
