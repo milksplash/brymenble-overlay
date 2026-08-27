@@ -8,6 +8,11 @@
   "properties": {
     "name": { "type": "string", "description": "Skin name; should match the folder name." },
     "script": { "type": "string", "description": "Render module filename (default skin.js)." },
+    "js_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Element ids driven from skin.js constants (not skin.json); excluded from the 'never referenced' warning."
+    },
     "renderer": {
       "type": "string",
       "enum": ["lcd"],

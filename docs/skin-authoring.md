@@ -84,11 +84,12 @@ self-test that lights every element you own.
 | key              | type            | notes |
 |------------------|-----------------|-------|
 | `name`           | string          | required; should match the folder name |
-| `digits`         | int             | required; number of 7-seg digits |
-| `digit_prefix`   | string          | required; segment ids are `<prefix><d>_<seg>` |
+| `digits`         | int             | required for 7-seg LCD skins; number of 7-seg digits (text-based skins may omit it) |
+| `digit_prefix`   | string          | required for 7-seg LCD skins; segment ids are `<prefix><d>_<seg>` |
 | `no_dp`          | int[]           | digit indexes with **no** decimal-point element (e.g. `[4]`) |
 | `script`         | string          | render module filename (default `skin.js`) |
 | `renderer`       | `"lcd"`         | use the built-in renderer instead of a script file |
+| `js_ids`         | string[]        | element ids driven from `skin.js` constants (not `skin.json`); excluded from the "never referenced" warning |
 | `sign`           | string          | negative-sign element id |
 | `unit`           | map             | unit → element id (see `state.unit` values) |
 | `prefix`         | map of maps     | unit → prefix → element id |
