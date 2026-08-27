@@ -8,7 +8,7 @@ version = "0.1.1"
 description = "BM78xBT multimeter LCD emulation overlay for OBS, driven live by the brymenble SDK over BLE"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
+license = { text = "MIT" }
 authors = [
     { name = "Martin Chan" },
 ]
