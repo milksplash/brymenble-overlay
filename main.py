@@ -1,11 +1,12 @@
 """BM78xBT display overlay — serve the emulated meter display to OBS.
 
 Usage:
-    python main.py [MAC] [--password 0000] [--host 0.0.0.0] [--port 8765]
+    python main.py [MAC] [--password 0000] [--host 127.0.0.1] [--port 8765]
 
-Binds to all interfaces (0.0.0.0) by default so OBS on any machine on the
-local network can point a Browser Source at this server. Without a MAC, the
-first BM78xBT meter found by scanning is used.
+Binds to loopback (127.0.0.1) by default so only this machine can reach the
+server. Pass --host 0.0.0.0 to bind all interfaces so OBS on another machine
+on the local network can point a Browser Source at this server. Without a
+MAC, the first BM78xBT meter found by scanning is used.
 """
 import argparse
 import asyncio
@@ -116,8 +117,9 @@ def main() -> None:
         help="connection password (default 0000)",
     )
     parser.add_argument(
-        "--host", default="0.0.0.0",
-        help="bind address (default 0.0.0.0 = all interfaces, for the LAN)",
+        "--host", default="127.0.0.1",
+        help="bind address (default 127.0.0.1 = this machine only; "
+             "use 0.0.0.0 to expose to the LAN for OBS on another machine)",
     )
     parser.add_argument(
         "--port", type=int, default=8765, help="HTTP port (default 8765)",
