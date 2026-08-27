@@ -52,6 +52,14 @@ The Windows binary accepts the same arguments:
 brymenble-overlay.exe 12:34:56:78:9A:BC --password 4321 --port 8765
 ```
 
+> **⚠️ LAN exposure.** The server binds to `0.0.0.0` (all interfaces) by
+> default so OBS on any machine on your local network can point a Browser
+> Source at it. There is **no authentication** — any device that can reach the
+> port can read `/state.json` (live meter readings) and the skins. This is
+> fine for a trusted local network, but **do not expose the port to untrusted
+> networks** (e.g. don't port-forward it, and avoid running it on a public
+> host). To restrict access to the local machine only, pass `--host 127.0.0.1`.
+
 ## Project layout
 
 ```
