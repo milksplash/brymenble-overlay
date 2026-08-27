@@ -102,6 +102,7 @@ async def run(args) -> None:
     finally:
         await client.close()
         server.shutdown()
+        server.server_close()
 
 
 def main() -> None:

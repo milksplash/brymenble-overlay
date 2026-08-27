@@ -406,6 +406,7 @@ async def run(host: str, port: int, dp_demo: bool, start: Optional[str],
             await asyncio.sleep(0.05)
     finally:
         server.shutdown()
+        server.server_close()
 
 
 if __name__ == "__main__":
