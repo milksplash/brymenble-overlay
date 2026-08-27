@@ -66,6 +66,7 @@ async def stream_loop(
 async def resolve_mac(mac: str) -> str:
     if mac:
         return mac
+    console.scanning()
     meter = await find_first_meter(
         timeout=5,
         retry_interval=10,
@@ -90,7 +91,7 @@ async def run(args) -> None:
 
     mac = await resolve_mac(args.mac)
     console.connecting(mac)
-    client = BrymenbleClient(mac, args.password, connect_timeout=5.0)
+    client = BrymenbleClient(mac, args.password, connect_timeout=10.0)
     try:
         # Retry forever until the meter is in range — a non-technical user may
         # launch the overlay before powering on the meter, and the server is
