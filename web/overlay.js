@@ -18,6 +18,10 @@
   const skinName = params.get('skin') || 'default';
   const base = `skins/${skinName}`;
 
+  // Bump this when the skin-loading / renderer code changes so a stale
+  // skin.js isn't served from cache across an OBS Browser Source reload.
+  const VERSION = '1';
+
   // ?debug=1 shows skin render errors on the page (the poll loop would
   // otherwise swallow them) — essential while authoring a skin.
   const debug = /^(1|true)$/i.test(params.get('debug') || '');
@@ -229,7 +233,11 @@
   const scriptName = skin.script || 'skin.js';
   if (skin.renderer !== 'lcd') {
     try {
-      await loadScript(`${base}/${scriptName}${debug ? '?v=' + Date.now() : ''}`);
+      // Always append a cache-buster so a stale skin.js can't survive an OBS
+      // Browser Source reload during skin iteration; ?debug=1 uses a stronger
+      // per-load timestamp to bypass the cache entirely.
+      const buster = debug ? '?v=' + Date.now() : '?v=' + VERSION;
+      await loadScript(`${base}/${scriptName}${buster}`);
       impl = window.__bm_skins && window.__bm_skins[skinName];
     } catch (e) {
       console.warn(`[${skinName}] no script at ${base}/${scriptName} — using built-in LCD renderer.`);
