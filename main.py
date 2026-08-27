@@ -68,7 +68,9 @@ async def resolve_mac(mac: str) -> str:
         on_retry=console.scanning_retry,
     )
     # retry_interval > 0 -> find_first_meter loops until a meter appears.
-    assert meter is not None
+    # Use an explicit raise (not assert) so the guard survives `python -O`.
+    if meter is None:
+        raise RuntimeError("no BM78xBT meter found")
     console.using(meter.address, meter.name or "unknown")
     return meter.address
 
