@@ -15,6 +15,9 @@ Static checks for each skin folder:
 For skins that use the built-in LCD renderer (skin.js optional), the
 "referenced ids exist in meter.svg" check is a full runtime coverage check —
 every id the renderer can touch is exactly the set skin.json references.
+Script-driven skins (a custom skin.js) reference some ids from JS constants
+rather than skin.json; declare those in the optional "js_ids" allowlist so
+they aren't reported as unreferenced.
 
 Usage:
     python tools/check_skin.py              # all skins
@@ -160,7 +163,13 @@ def check_skin(skin_dir: Path):
         errors.append(f"id {mid!r} appears more than once in meter.svg (must be unique)")
 
     # Unreferenced SVG ids (informational — custom skins may drive extra ids).
-    unref = svg_ids - set(refs)
+    # Script-driven skins reference some ids from skin.js constants (e.g.
+    # text_reading / value_text) rather than skin.json; those are declared in
+    # the optional "js_ids" allowlist so they aren't reported as unreferenced.
+    js_ids = skin.get("js_ids") or []
+    if not isinstance(js_ids, list) or not all(isinstance(i, str) for i in js_ids):
+        errors.append("skin.json \"js_ids\" must be a list of element id strings")
+    unref = svg_ids - set(refs) - set(js_ids)
     if unref:
         shown = ", ".join(sorted(unref)[:12])
         more = " …" if len(unref) > 12 else ""

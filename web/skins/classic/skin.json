@@ -1,6 +1,7 @@
 {
   "name": "classic",
   "script": "skin.js",
+  "js_ids": ["value_text"],
   "digits": 5,
   "digit_prefix": "digit",
   "sign": "sign_neg",

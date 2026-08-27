@@ -1,6 +1,7 @@
 {
   "name": "default",
   "script": "skin.js",
+  "js_ids": ["text_reading"],
   "function": {
     "type": "text",
     "id": "text_function"
