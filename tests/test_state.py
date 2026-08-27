@@ -41,6 +41,23 @@ def test_negative_reading(make_info, make_reading):
     assert state["sign"] is True
 
 
+def test_numeric_overflow_truncated_to_display_width(make_info, make_reading):
+    # A value longer than the display width must be truncated so value_digits
+    # length always equals the display width (contract), keeping the least
+    # significant digits for a right-aligned numeric reading.
+    state = build_render_state(
+        make_info(),
+        make_reading(mantissa=123456789, decimal_pos=2, display_digit_count=5),
+    )
+    digits = state["value_digits"]
+    assert len(digits) == 5
+    # mantissa 123456789, decimal_pos 2 -> value 1234567.89 -> "123456789"
+    # -> last 5 = "56789"
+    assert [d["char"] for d in digits] == ["5", "6", "7", "8", "9"]
+    # dp_index (decimal_pos-1 = 1) is within range, so it is preserved.
+    assert [d["dp"] for d in digits] == [False, True, False, False, False]
+
+
 def test_prefix_passthrough(make_info, make_reading):
     state = build_render_state(make_info(), make_reading(prefix="m"))
     assert state["prefix"] == "m"

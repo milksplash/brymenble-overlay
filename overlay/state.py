@@ -66,6 +66,18 @@ def _cells_from_text(
     if len(text) < display_digits:
         pad = fill * (display_digits - len(text))
         text = text + pad if align == "left" else pad + text
+    elif len(text) > display_digits:
+        # Overflow: the derived string is longer than the display width. Keep
+        # the contract that ``value_digits`` length equals the display width —
+        # truncate to fit. Right-aligned (numeric) values keep their least
+        # significant digits; left-aligned (ASCII text) keep their leading
+        # characters. Clamp dp_index so it can't point past the last cell.
+        if align == "left":
+            text = text[:display_digits]
+        else:
+            text = text[-display_digits:]
+        if dp_index is not None and dp_index >= display_digits:
+            dp_index = display_digits - 1
     cells = []
     for i, ch in enumerate(text):
         if ch == " ":
