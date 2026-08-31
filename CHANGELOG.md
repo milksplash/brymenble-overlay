@@ -19,6 +19,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **BLE connect timeout raised to the SDK default (10s)** — the overlay no
   longer overrides `connect_timeout` to 5s, reducing transient first-attempt
   connect timeouts on cold-start BLE connects.
+- **Added a `--verbose`/`-v` flag** — enables DEBUG logging (matching the
+  bridge), and logging is now always configured so SDK warnings (e.g. the
+  scan diagnostic) get a timestamp by default.
 
 ### Fixed
 
