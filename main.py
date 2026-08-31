@@ -10,6 +10,7 @@ MAC, the first BM78xBT meter found by scanning is used.
 """
 import argparse
 import asyncio
+import logging
 
 from brymenble import DEFAULT_PASSWORD, BrymenbleClient, console, find_first_meter
 
@@ -129,7 +130,17 @@ def main() -> None:
         "--reconnect-interval", type=float, default=10.0,
         help="seconds between reconnect attempts after a failure (default 10.0)",
     )
+    parser.add_argument(
+        "--verbose", "-v", action="count", default=0,
+        help="increase log verbosity (repeat for debug)",
+    )
     args = parser.parse_args()
+    # Always configure logging so SDK warnings (e.g. the scan diagnostic) get
+    # a timestamp. --verbose only raises the level to show DEBUG output.
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.WARNING,
+        format="%(asctime)s %(levelname)-7s %(message)s",
+    )
     try:
         asyncio.run(run(args))
     except KeyboardInterrupt:
