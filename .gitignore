@@ -18,3 +18,5 @@ web/skins/official/
 
 # Local-only real-meter verification checklist — never commit
 docs/meter-verification.md
+
+misc/
